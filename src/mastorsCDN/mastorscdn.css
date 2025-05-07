@@ -1,0 +1,66 @@
+.scroll-bar::-webkit-scrollbar {
+  width: 0.4rem;
+}
+
+.scroll-bar::-webkit-scrollbar-track {
+  background: #e2e2e2;
+}
+
+.scroll-bar::-webkit-scrollbar-thumb {
+  background: #9c8787;
+  border-radius: 1rem;
+}
+
+.scroll-bar::-webkit-scrollbar-thumb:hover {
+  background: #806e6e;
+}
+
+.m--10,
+.m-all--10 {
+  margin-top: -1rem;
+  margin-right: -1rem;
+  margin-bottom: -1rem;
+  margin-left: -1rem;
+}
+
+.text-dotted-1 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: block-axis;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 0.2rem;
+  font-size: 1rem;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn[disabled] {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.btn-warning {
+  background-color: #ff9800;
+  color: #fff;
+}
+
+.btn-warning:hover {
+  background-color: rgb(229.5, 136.8, 0);
+}
+
+.btn-warning:active {
+  background-color: rgb(204, 121.6, 0);
+}
+
+.btn-warning:focus {
+  background-color: rgb(204, 121.6, 0);
+  box-shadow: 0 0 0 2px rgb(255, 193.2, 102);
+}

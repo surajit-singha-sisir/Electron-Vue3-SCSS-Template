@@ -1,0 +1,58 @@
+// @forward "themeSwapper";
+@use 'sass:color';
+
+// DARK VARIBABLES
+$d-text: #d7d7d7;
+$d-sub-text: #c8c8c8;
+$d-sub-sub-text: #a4a4a4;
+$d-bg: #383838;
+$d-border: #4d4d4d;
+$d-primary: #5864b2;
+$d-secondary: #7b7b7b;
+$d-btn-1: #4f5d5a;
+$d-btn-2: #886f58;
+$d-btn-3: #4f885b;
+$d-fuschia: #ef5da8;
+
+.d- {
+  &text {
+    color: $d-text;
+  }
+  &sub-text {
+    color: $d-sub-text;
+  }
+  &sub-sub-text {
+    color: $d-sub-sub-text;
+  }
+  &bg {
+    color: $d-bg;
+  }
+  &border {
+    color: $d-border;
+  }
+  &primary {
+    color: $d-primary;
+  }
+  &secondary {
+    color: $d-secondary;
+  }
+  &btn-1 {
+    color: $d-btn-1;
+  }
+  &btn-2 {
+    color: $d-btn-2;
+  }
+  &btn-3 {
+    color: $d-btn-3;
+  }
+  &fuschia {
+    color: $d-fuschia;
+  }
+}
+
+.layout-bg {
+  background: color.adjust($d-bg, $lightness: -2%);
+}
+.border-bottom {
+  border-bottom: 1px solid $d-border;
+}

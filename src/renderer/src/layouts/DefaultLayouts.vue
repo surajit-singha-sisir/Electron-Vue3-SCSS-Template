@@ -40,7 +40,7 @@ export default {
 }
 
 .ios-header {
-    height: 44px;
+    height: 2rem;
     /* Standard iOS navigation bar height */
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
