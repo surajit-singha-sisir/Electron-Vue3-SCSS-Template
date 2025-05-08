@@ -1,0 +1,14 @@
+@use '../variables/index' as *;
+@use 'sass:color';
+
+// DARK THEME
+
+body.white {
+  background-color: $d-text;
+}
+body.dark {
+  background-color: $d-bg;
+  & * {
+    color: $d-text;
+  }
+}

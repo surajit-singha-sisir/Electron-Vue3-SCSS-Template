@@ -138509,16 +138509,16 @@ WIDTH IN REM SIZE
 .text-xs, .text--xs {
   font-size: 0.4rem;
 }
-.text-s, .text--s {
+.text-sm, .text--sm {
   font-size: 0.8rem;
 }
 .text-n, .text-normal, .text-general, .text--n, .text--normal, .text--general {
   font-size: 1rem;
 }
-.text-m, .text--m {
+.text-md, .text--md {
   font-size: 1.2rem;
 }
-.text-l, .text--l {
+.text-lg, .text--lg {
   font-size: 1.4rem;
 }
 .text-xl, .text--xl {

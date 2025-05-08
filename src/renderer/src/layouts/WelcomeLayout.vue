@@ -1,29 +1,24 @@
 <template>
-    <div class="layout no-scrollbar">
-        <header class="ios-header layout-bg border-bottom">
-            <p>Onuman Software</p>
-            <Controls />
-        </header>
-        <main class="content">
-            <slot />
-        </main>
-    </div>
+    <header class="ios-header layout-bg border-bottom">
+        <div class="text-nowrap text-s f-center gap-05">
+            <div class="onuman-icon">
+                <img src="../assets/images/Onuman-logo.svg" alt="Onuman Logo">
+            </div>
+            <b>Onuman 1.0</b>
+        </div>
+        <Controls />
+    </header>
+    <main class="main">
+        <slot />
+    </main>
 </template>
 
 <script setup lang="ts">
 import Controls from '../components/Controls.vue';
-
 </script>
 
 <style scoped lang="scss">
 @use "../assets/styles/variables/_index.scss" as *;
-
-.layout {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    -webkit-app-region: no-drag;
-}
 
 .ios-header {
     height: 2rem;
@@ -36,8 +31,8 @@ import Controls from '../components/Controls.vue';
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 5;
+    margin-bottom: 2rem;
     -webkit-app-region: drag;
 }
-
 </style>

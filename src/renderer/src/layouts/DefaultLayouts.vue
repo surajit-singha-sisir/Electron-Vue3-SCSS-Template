@@ -24,7 +24,6 @@ export default {
     methods: {
         openSettings() {
             alert('Settings clicked!');
-            // Replace with actual settings logic, e.g., this.$router.push('/settings')
         },
     },
 };
@@ -34,7 +33,8 @@ export default {
 .layout {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    width: 100%;
+    height: 100%;
     -webkit-app-region: no-drag;
     /* Prevent dragging on layout */
 }
@@ -42,7 +42,7 @@ export default {
 .ios-header {
     height: 2rem;
     /* Standard iOS navigation bar height */
-    background: rgba(255, 255, 255, 0.8);
+    background: #888;
     backdrop-filter: blur(10px);
     /* iOS-style blur effect */
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -55,7 +55,7 @@ export default {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 5;
     -webkit-app-region: drag;
     /* Make header draggable */
 }

@@ -13,7 +13,25 @@ $d-btn-1: #4f5d5a;
 $d-btn-2: #886f58;
 $d-btn-3: #4f885b;
 $d-fuschia: #ef5da8;
+$d-white: #fcfcfc;
+$d-black: #111111;
 
+// Z-INDEX
+$z-down: -1;
+$z-ground: 0;
+$z-bottom: 1;
+$z-top: 2;
+$z-toper: 3;
+$z-topest: 4;
+$z-min: -2;
+$z-max: 10;
+
+.white {
+  color: $d-white;
+}
+.black {
+  color: $d-black;
+}
 .d- {
   &text {
     color: $d-text;

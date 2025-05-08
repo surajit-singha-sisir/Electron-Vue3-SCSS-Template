@@ -1,7 +1,5 @@
 <template>
-  <DefaultLayouts>
-    <router-view />
-  </DefaultLayouts>
+  <router-view />
 </template>
 
 <script setup lang="ts">

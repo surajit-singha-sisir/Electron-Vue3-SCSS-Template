@@ -1,24 +1,24 @@
 <template>
-    <WelcomeLayout class="no-scrollbar scroll-bar m--10">
-        <h1>Index Page</h1>
-        <p class="btn btn-warning">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus error at esse natus nisi explicabo harum!
-            Consectetur minima commodi mollitia in. Voluptatem facere deleniti aperiam omnis in beatae amet quis.</p>
-        <RouterLink class="text-dotted-1" to="/About">Get Route</RouterLink><br>
-        <RouterLink to="/Contact">Contact</RouterLink>
+    <WelcomeLayout class="d-block relative">
+        <section class="f-center h-vh-100">
+            <div class="abs-center" ref="welcomeLoading">
+                <h1 class="text-center animate-top-bottom">Welcome to</h1><br>
+                <div class="onuman-logo w--150">
+                    <img src="../../assets/images/Onuman-logo-full-white.svg" alt="Onuman Logo">
+                </div>
+                <div class="welcome-loader"></div>
+            </div>
+        </section>
     </WelcomeLayout>
 </template>
 
 <script setup lang="ts">
-import WelcomeLayout from '@renderer/layouts/WelcomeLayout.vue';
+import { ref } from 'vue';
+import WelcomeLayout from '../../layouts/WelcomeLayout.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+setTimeout(() => {
+    router.push('/license')
+}, 3000);
 </script>
-
-<style>
-h1,
-p,
-h2,
-h3,
-a {
-    color: white;
-}
-</style>
-
