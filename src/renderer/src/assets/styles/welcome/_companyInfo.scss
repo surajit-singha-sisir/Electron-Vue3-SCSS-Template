@@ -1,0 +1,58 @@
+@use '../variables/index' as *;
+@use 'sass:color';
+
+.columned {
+  position: relative;
+  width: 100%;
+  height: auto;
+  background-color: color.adjust($d-bg, $lightness: 2%);
+  border: 1px solid $d-border;
+}
+.company-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.two-column {
+  width: 95% !important;
+  height: 100%;
+//   overflow-y: scroll;
+//   overflow-x: auto;
+}
+
+.onuman-input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 1rem;
+
+  & > label {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+  }
+
+  & fieldset {
+    border: 1px solid $d-border;
+    padding: 1rem;
+    border-radius: 0.3rem;
+
+    legend {
+      text-align: center;
+      padding: 0.4rem;
+      border: 1px solid $d-border;
+      border-radius: 0.2rem;
+      letter-spacing: 0.5px;
+
+      &:hover {
+        background-color: $d-border;
+      }
+    }
+  }
+
+  &:first-child {
+    padding-top: 1rem;
+  }
+  &:last-child {
+    padding-bottom: 1rem;
+  }
+}

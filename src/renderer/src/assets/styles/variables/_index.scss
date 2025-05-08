@@ -15,6 +15,9 @@ $d-btn-3: #4f885b;
 $d-fuschia: #ef5da8;
 $d-white: #fcfcfc;
 $d-black: #111111;
+$d-red: #d43333;
+$d-warning: #d8d50e;
+$d-success: #1de0c6;
 
 // Z-INDEX
 $z-down: -1;
@@ -27,44 +30,53 @@ $z-min: -2;
 $z-max: 10;
 
 .white {
-  color: $d-white;
+  color: $d-white !important;
 }
 .black {
-  color: $d-black;
+  color: $d-black !important;
+}
+.red {
+  color: $d-red !important;
+}
+.warning {
+  color: $d-warning !important;
+}
+.success {
+  color: $d-success !important;
 }
 .d- {
   &text {
-    color: $d-text;
+    color: $d-text !important;
   }
   &sub-text {
-    color: $d-sub-text;
+    color: $d-sub-text !important;
   }
   &sub-sub-text {
-    color: $d-sub-sub-text;
+    color: $d-sub-sub-text !important;
   }
   &bg {
-    color: $d-bg;
+    color: $d-bg !important;
   }
   &border {
-    color: $d-border;
+    color: $d-border !important;
   }
   &primary {
-    color: $d-primary;
+    color: $d-primary !important;
   }
   &secondary {
-    color: $d-secondary;
+    color: $d-secondary !important;
   }
   &btn-1 {
-    color: $d-btn-1;
+    color: $d-btn-1 !important;
   }
   &btn-2 {
-    color: $d-btn-2;
+    color: $d-btn-2 !important;
   }
   &btn-3 {
-    color: $d-btn-3;
+    color: $d-btn-3 !important;
   }
   &fuschia {
-    color: $d-fuschia;
+    color: $d-fuschia !important;
   }
 }
 

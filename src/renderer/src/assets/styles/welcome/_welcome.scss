@@ -20,27 +20,6 @@
   flex-direction: column;
   gap: 1rem;
 
-  .license-input {
-    width: 4.5rem;
-    padding: 0;
-    border: 1px solid $d-border;
-    border-radius: 4px;
-    text-align: center;
-    text-transform: uppercase;
-    outline: none;
-    background-color: $d-bg;
-    transition: border-color 0.2s;
-  }
-
-  .license-input:focus {
-    border-color: $d-primary;
-    box-shadow: 0 0 0 1px $d-btn-1;
-  }
-
-  .license-input::placeholder {
-    color: $d-secondary;
-    letter-spacing: 2px;
-  }
   .activate-btn {
     width: 100%;
     padding: 8px;
@@ -54,6 +33,62 @@
     justify-content: center;
   }
 }
+
+.license-input,
+.onuman-input {
+  width: 4.5rem;
+  padding: 0;
+  border: 1px solid $d-border !important;
+  border-radius: 4px;
+  outline: none;
+  background-color: $d-bg !important;
+  transition: border-color 0.2s;
+}
+.license-input {
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.license-input:focus,
+.onuman-input:focus {
+  border-color: $d-primary !important;
+  box-shadow: 0 0 0 1px $d-btn-1 !important;
+}
+
+.onuman-input::placeholder {
+  color: $d-secondary;
+  font-size: 0.9rem !important;
+  letter-spacing: 0.5px !important;
+}
+.license-input::placeholder {
+  color: $d-secondary;
+  letter-spacing: 2px;
+}
+
+.onuman-input2 {
+  width: 4.5rem;
+  padding: 0;
+  border: 1px solid $d-border !important;
+  border-radius: 4px;
+  outline: none;
+  background-color: color.adjust($d-bg, $lightness: 4%) !important;
+  transition: border-color 0.2s;
+}
+.onuman-input2:focus {
+  border-color: $d-primary !important;
+  box-shadow: 0 0 0 1px $d-btn-1 !important;
+}
+
+.onuman-input2::placeholder {
+  color: $d-secondary;
+  font-size: 0.9rem !important;
+  letter-spacing: 0.5px !important;
+}
+.onuman-input2::placeholder {
+  color: $d-secondary;
+  letter-spacing: 2px;
+}
+
 .paste-key {
   position: absolute;
   top: -2rem;

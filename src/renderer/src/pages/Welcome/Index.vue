@@ -20,5 +20,5 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 setTimeout(() => {
     router.push('/license')
-}, 3000);
+}, 5000);
 </script>
