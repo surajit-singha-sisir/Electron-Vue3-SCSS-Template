@@ -74,6 +74,16 @@ span {
   -moz-user-select: text;
   -ms-user-select: text;
 }
+img {
+  user-drag: none;
+  -webkit-user-drag: none;
+  pointer-events: none; /* Optional: disables all mouse events */
+}
+
+// GLOBAL HR
+hr {
+  border: 1px solid $d-border;
+}
 
 // ALL INPUT CLASSES
 input[type='text'],
