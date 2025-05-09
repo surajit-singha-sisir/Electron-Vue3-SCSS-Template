@@ -16,8 +16,8 @@
 .two-column {
   width: 95% !important;
   height: 100%;
-//   overflow-y: scroll;
-//   overflow-x: auto;
+  //   overflow-y: scroll;
+  //   overflow-x: auto;
 }
 
 .onuman-input-box {
@@ -55,4 +55,9 @@
   &:last-child {
     padding-bottom: 1rem;
   }
+}
+
+.auto-options-3-cols {
+  display: flex;
+  gap: 1rem;
 }

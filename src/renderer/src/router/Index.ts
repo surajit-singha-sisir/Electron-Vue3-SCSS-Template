@@ -5,6 +5,9 @@ import Contact from '../pages/Contact.vue'
 import License from '../pages/Welcome/License.vue'
 import PrivacyPolicy from '../pages/Welcome/PrivacyPolicy.vue'
 import CompanyInfo from '../pages/Welcome/CompanyInfo.vue'
+import OnumanCombobox from '../pages/Welcome/Combo.vue'
+import ToolTip from '../components/ToolTip.vue'
+import ToolTipPage from '../pages/Welcome/ToolTipPage.vue'
 
 const routes = [
   {
@@ -26,6 +29,16 @@ const routes = [
     path: '/CompanyInfo',
     name: 'CompanyInfo',
     component: CompanyInfo
+  },
+  {
+    path: '/Combobox',
+    name: 'Combobox',
+    component: OnumanCombobox
+  },
+  {
+    path: '/tooltip',
+    name: 'Tooltip',
+    component: ToolTipPage
   },
   {
     path: '/about',

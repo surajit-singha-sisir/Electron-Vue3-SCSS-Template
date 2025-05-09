@@ -56,6 +56,25 @@ a {
   text-decoration: none;
 }
 
+body > img,
+p,
+div,
+aside {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  user-drag: none;
+  -webkit-user-drag: none;
+}
+span {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
 // ALL INPUT CLASSES
 input[type='text'],
 input[type='color'],

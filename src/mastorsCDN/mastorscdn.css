@@ -67,6 +67,10 @@
   margin-bottom: 2rem;
 }
 
+.m-b-30 {
+  margin-bottom: 3rem;
+}
+
 .rotate-180 {
   transform: rotate(180deg);
 }
@@ -490,6 +494,302 @@
   grid-column: span 10;
 }
 
+.g-res-3-col-container,
+.grid-res-3-col-container {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-base,
+.g-res-10-col-container,
+.grid-res-10-col-container,
+.g-res-9-col-container,
+.grid-res-9-col-container,
+.g-res-8-col-container,
+.grid-res-8-col-container,
+.g-res-7-col-container,
+.grid-res-7-col-container,
+.g-res-6-col-container,
+.grid-res-6-col-container,
+.g-res-5-col-container,
+.grid-res-5-col-container,
+.g-res-4-col-container,
+.grid-res-4-col-container,
+.g-res-3-col-container,
+.grid-res-3-col-container,
+.g-res-2-col-container,
+.grid-res-2-col-container,
+.g-res-container,
+.grid-res-container {
+  display: grid;
+  width: 100%;
+  row-gap: 1rem;
+  grid-template-rows: auto;
+}
+
+.grid-base .column,
+.g-res-10-col-container .column,
+.grid-res-10-col-container .column,
+.g-res-9-col-container .column,
+.grid-res-9-col-container .column,
+.g-res-8-col-container .column,
+.grid-res-8-col-container .column,
+.g-res-7-col-container .column,
+.grid-res-7-col-container .column,
+.g-res-6-col-container .column,
+.grid-res-6-col-container .column,
+.g-res-5-col-container .column,
+.grid-res-5-col-container .column,
+.g-res-4-col-container .column,
+.grid-res-4-col-container .column,
+.g-res-3-col-container .column,
+.grid-res-3-col-container .column,
+.g-res-2-col-container .column,
+.grid-res-2-col-container .column,
+.g-res-container .column,
+.grid-res-container .column {
+  grid-column: span 1;
+}
+
+.grid-base .span-1,
+.g-res-10-col-container .span-1,
+.grid-res-10-col-container .span-1,
+.g-res-9-col-container .span-1,
+.grid-res-9-col-container .span-1,
+.g-res-8-col-container .span-1,
+.grid-res-8-col-container .span-1,
+.g-res-7-col-container .span-1,
+.grid-res-7-col-container .span-1,
+.g-res-6-col-container .span-1,
+.grid-res-6-col-container .span-1,
+.g-res-5-col-container .span-1,
+.grid-res-5-col-container .span-1,
+.g-res-4-col-container .span-1,
+.grid-res-4-col-container .span-1,
+.g-res-3-col-container .span-1,
+.grid-res-3-col-container .span-1,
+.g-res-2-col-container .span-1,
+.grid-res-2-col-container .span-1,
+.g-res-container .span-1,
+.grid-res-container .span-1 {
+  grid-column: span 1;
+}
+
+.grid-base .span-2,
+.g-res-10-col-container .span-2,
+.grid-res-10-col-container .span-2,
+.g-res-9-col-container .span-2,
+.grid-res-9-col-container .span-2,
+.g-res-8-col-container .span-2,
+.grid-res-8-col-container .span-2,
+.g-res-7-col-container .span-2,
+.grid-res-7-col-container .span-2,
+.g-res-6-col-container .span-2,
+.grid-res-6-col-container .span-2,
+.g-res-5-col-container .span-2,
+.grid-res-5-col-container .span-2,
+.g-res-4-col-container .span-2,
+.grid-res-4-col-container .span-2,
+.g-res-3-col-container .span-2,
+.grid-res-3-col-container .span-2,
+.g-res-2-col-container .span-2,
+.grid-res-2-col-container .span-2,
+.g-res-container .span-2,
+.grid-res-container .span-2 {
+  grid-column: span 2;
+}
+
+.grid-base .span-3,
+.g-res-10-col-container .span-3,
+.grid-res-10-col-container .span-3,
+.g-res-9-col-container .span-3,
+.grid-res-9-col-container .span-3,
+.g-res-8-col-container .span-3,
+.grid-res-8-col-container .span-3,
+.g-res-7-col-container .span-3,
+.grid-res-7-col-container .span-3,
+.g-res-6-col-container .span-3,
+.grid-res-6-col-container .span-3,
+.g-res-5-col-container .span-3,
+.grid-res-5-col-container .span-3,
+.g-res-4-col-container .span-3,
+.grid-res-4-col-container .span-3,
+.g-res-3-col-container .span-3,
+.grid-res-3-col-container .span-3,
+.g-res-2-col-container .span-3,
+.grid-res-2-col-container .span-3,
+.g-res-container .span-3,
+.grid-res-container .span-3 {
+  grid-column: span 3;
+}
+
+.grid-base .span-4,
+.g-res-10-col-container .span-4,
+.grid-res-10-col-container .span-4,
+.g-res-9-col-container .span-4,
+.grid-res-9-col-container .span-4,
+.g-res-8-col-container .span-4,
+.grid-res-8-col-container .span-4,
+.g-res-7-col-container .span-4,
+.grid-res-7-col-container .span-4,
+.g-res-6-col-container .span-4,
+.grid-res-6-col-container .span-4,
+.g-res-5-col-container .span-4,
+.grid-res-5-col-container .span-4,
+.g-res-4-col-container .span-4,
+.grid-res-4-col-container .span-4,
+.g-res-3-col-container .span-4,
+.grid-res-3-col-container .span-4,
+.g-res-2-col-container .span-4,
+.grid-res-2-col-container .span-4,
+.g-res-container .span-4,
+.grid-res-container .span-4 {
+  grid-column: span 4;
+}
+
+.grid-base .span-5,
+.g-res-10-col-container .span-5,
+.grid-res-10-col-container .span-5,
+.g-res-9-col-container .span-5,
+.grid-res-9-col-container .span-5,
+.g-res-8-col-container .span-5,
+.grid-res-8-col-container .span-5,
+.g-res-7-col-container .span-5,
+.grid-res-7-col-container .span-5,
+.g-res-6-col-container .span-5,
+.grid-res-6-col-container .span-5,
+.g-res-5-col-container .span-5,
+.grid-res-5-col-container .span-5,
+.g-res-4-col-container .span-5,
+.grid-res-4-col-container .span-5,
+.g-res-3-col-container .span-5,
+.grid-res-3-col-container .span-5,
+.g-res-2-col-container .span-5,
+.grid-res-2-col-container .span-5,
+.g-res-container .span-5,
+.grid-res-container .span-5 {
+  grid-column: span 5;
+}
+
+.grid-base .span-6,
+.g-res-10-col-container .span-6,
+.grid-res-10-col-container .span-6,
+.g-res-9-col-container .span-6,
+.grid-res-9-col-container .span-6,
+.g-res-8-col-container .span-6,
+.grid-res-8-col-container .span-6,
+.g-res-7-col-container .span-6,
+.grid-res-7-col-container .span-6,
+.g-res-6-col-container .span-6,
+.grid-res-6-col-container .span-6,
+.g-res-5-col-container .span-6,
+.grid-res-5-col-container .span-6,
+.g-res-4-col-container .span-6,
+.grid-res-4-col-container .span-6,
+.g-res-3-col-container .span-6,
+.grid-res-3-col-container .span-6,
+.g-res-2-col-container .span-6,
+.grid-res-2-col-container .span-6,
+.g-res-container .span-6,
+.grid-res-container .span-6 {
+  grid-column: span 6;
+}
+
+.grid-base .span-7,
+.g-res-10-col-container .span-7,
+.grid-res-10-col-container .span-7,
+.g-res-9-col-container .span-7,
+.grid-res-9-col-container .span-7,
+.g-res-8-col-container .span-7,
+.grid-res-8-col-container .span-7,
+.g-res-7-col-container .span-7,
+.grid-res-7-col-container .span-7,
+.g-res-6-col-container .span-7,
+.grid-res-6-col-container .span-7,
+.g-res-5-col-container .span-7,
+.grid-res-5-col-container .span-7,
+.g-res-4-col-container .span-7,
+.grid-res-4-col-container .span-7,
+.g-res-3-col-container .span-7,
+.grid-res-3-col-container .span-7,
+.g-res-2-col-container .span-7,
+.grid-res-2-col-container .span-7,
+.g-res-container .span-7,
+.grid-res-container .span-7 {
+  grid-column: span 7;
+}
+
+.grid-base .span-8,
+.g-res-10-col-container .span-8,
+.grid-res-10-col-container .span-8,
+.g-res-9-col-container .span-8,
+.grid-res-9-col-container .span-8,
+.g-res-8-col-container .span-8,
+.grid-res-8-col-container .span-8,
+.g-res-7-col-container .span-8,
+.grid-res-7-col-container .span-8,
+.g-res-6-col-container .span-8,
+.grid-res-6-col-container .span-8,
+.g-res-5-col-container .span-8,
+.grid-res-5-col-container .span-8,
+.g-res-4-col-container .span-8,
+.grid-res-4-col-container .span-8,
+.g-res-3-col-container .span-8,
+.grid-res-3-col-container .span-8,
+.g-res-2-col-container .span-8,
+.grid-res-2-col-container .span-8,
+.g-res-container .span-8,
+.grid-res-container .span-8 {
+  grid-column: span 8;
+}
+
+.grid-base .span-9,
+.g-res-10-col-container .span-9,
+.grid-res-10-col-container .span-9,
+.g-res-9-col-container .span-9,
+.grid-res-9-col-container .span-9,
+.g-res-8-col-container .span-9,
+.grid-res-8-col-container .span-9,
+.g-res-7-col-container .span-9,
+.grid-res-7-col-container .span-9,
+.g-res-6-col-container .span-9,
+.grid-res-6-col-container .span-9,
+.g-res-5-col-container .span-9,
+.grid-res-5-col-container .span-9,
+.g-res-4-col-container .span-9,
+.grid-res-4-col-container .span-9,
+.g-res-3-col-container .span-9,
+.grid-res-3-col-container .span-9,
+.g-res-2-col-container .span-9,
+.grid-res-2-col-container .span-9,
+.g-res-container .span-9,
+.grid-res-container .span-9 {
+  grid-column: span 9;
+}
+
+.grid-base .span-10,
+.g-res-10-col-container .span-10,
+.grid-res-10-col-container .span-10,
+.g-res-9-col-container .span-10,
+.grid-res-9-col-container .span-10,
+.g-res-8-col-container .span-10,
+.grid-res-8-col-container .span-10,
+.g-res-7-col-container .span-10,
+.grid-res-7-col-container .span-10,
+.g-res-6-col-container .span-10,
+.grid-res-6-col-container .span-10,
+.g-res-5-col-container .span-10,
+.grid-res-5-col-container .span-10,
+.g-res-4-col-container .span-10,
+.grid-res-4-col-container .span-10,
+.g-res-3-col-container .span-10,
+.grid-res-3-col-container .span-10,
+.g-res-2-col-container .span-10,
+.grid-res-2-col-container .span-10,
+.g-res-container .span-10,
+.grid-res-container .span-10 {
+  grid-column: span 10;
+}
+
 .g-res-2-col-container,
 .grid-res-2-col-container {
   grid-template-columns: repeat(2, 1fr);
@@ -570,6 +870,24 @@
 .btn-nav-secondary:focus {
   background-color: rgb(86.4, 93.6, 100);
   box-shadow: 0 0 0 2px rgb(165.8369098712, 172.2566523605, 177.9630901288);
+}
+
+.btn-warning {
+  background-color: #ff9800;
+  color: #fff;
+}
+
+.btn-warning:hover {
+  background-color: rgb(229.5, 136.8, 0);
+}
+
+.btn-warning:active {
+  background-color: rgb(204, 121.6, 0);
+}
+
+.btn-warning:focus {
+  background-color: rgb(204, 121.6, 0);
+  box-shadow: 0 0 0 2px rgb(255, 193.2, 102);
 }
 
 .btn-calm {
