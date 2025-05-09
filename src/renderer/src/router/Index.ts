@@ -8,6 +8,7 @@ import CompanyInfo from '../pages/Welcome/CompanyInfo.vue'
 import OnumanCombobox from '../pages/Welcome/Combo.vue'
 import ToolTip from '../components/ToolTip.vue'
 import ToolTipPage from '../pages/Welcome/ToolTipPage.vue'
+import Welcome from '../pages/Welcome/welcome.vue'
 
 const routes = [
   {
@@ -31,9 +32,9 @@ const routes = [
     component: CompanyInfo
   },
   {
-    path: '/Combobox',
-    name: 'Combobox',
-    component: OnumanCombobox
+    path: '/welcome',
+    name: 'welcome',
+    component: Welcome
   },
   {
     path: '/tooltip',

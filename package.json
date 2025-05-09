@@ -27,6 +27,7 @@
     "@vue/compiler-sfc": "^3.5.13",
     "dompurify": "^3.2.5",
     "electron-updater": "^6.3.9",
+    "vue-confetti": "^2.3.0",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {

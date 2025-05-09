@@ -159,7 +159,7 @@
                             aria-labelledby="employee-name-label" aria-describedby="employee-name-error"
                             maxlength="200">
                         <span v-if="employeeNameError" class="red" id="employee-name-error">{{ employeeNameError
-                            }}</span>
+                        }}</span>
                     </div>
 
                     <!-- Your Designation -->
@@ -228,6 +228,7 @@ import locationData from '../../assets/jsons/country-state-city.json';
 import OnumanCombobox from '../../components/OnumanCombobox.vue';
 import Tooltip from '../../components/ToolTip.vue';
 import { useValidators } from '../../composables/useValidators';
+import { useRouter } from 'vue-router';
 
 // DEFINE INTERFACES FOR JSON STRUCTURE
 interface City {
@@ -372,6 +373,7 @@ onMounted(() => {
     }
 });
 const loading = ref(false);
+const router = useRouter();
 // FORM SUBMISSION HANDLER
 const submitForm = async () => {
     let hasErrors = false;
@@ -518,10 +520,6 @@ const submitForm = async () => {
         const result = await response.json();
         console.log('API response:', result);
 
-        // Handle success (e.g., show a success message or redirect)
-        alert('Form submitted successfully!');
-
-        // Optionally clear localStorage after successful submission
         localStorage.removeItem('companyFormData');
 
         // Reset the form
@@ -545,6 +543,7 @@ const submitForm = async () => {
         alert('Failed to submit the form. Please try again later.');
     } finally {
         loading.value = false;
+        router.push('/welcome');
     }
 };
 </script>
