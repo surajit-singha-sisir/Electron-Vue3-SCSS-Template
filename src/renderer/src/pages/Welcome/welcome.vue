@@ -36,7 +36,6 @@ const createConfetti = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size to cover the window
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
