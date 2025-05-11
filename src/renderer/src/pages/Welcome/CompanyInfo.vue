@@ -1,10 +1,10 @@
 <template>
     <WelcomeLayout>
-        <div class="main-screen h-100 w-100 f-start-center f-col gap-10">
+        <form class="main-screen h-100 w-100 f-start-center f-col gap-10" method="post" @submit.prevent="submitForm">
             <div class="onuman-logo w--100 m-t-50">
                 <img src="../../assets/images/Onuman-logo-full-white.svg" alt="Onuman Logo">
             </div><br>
-            <form class="g-res-2-col-container gap-10 two-column" method="post" @submit.prevent="submitForm">
+            <section class="g-res-2-col-container gap-10 two-column">
                 <!-- COMPANY INFORMATION -->
                 <aside class="company-info columned">
                     <div class="company-info-warning">
@@ -171,7 +171,7 @@
                             aria-labelledby="employee-name-label" aria-describedby="employee-name-error"
                             maxlength="200">
                         <span v-if="employeeNameError" class="red" id="employee-name-error">{{ employeeNameError
-                        }}</span>
+                            }}</span>
                     </div>
 
                     <!-- Your Designation -->
@@ -234,14 +234,13 @@
                         </span>
                     </div>
                 </aside>
-
-
-
-                <button type="submit" class="btn btn-primary m-b-30 w--100" :disabled="loading">
+            </section>
+            <div class="w-95 f-end-center">
+                <button type="submit" class="btn btn-primary m-b-30 w--100 float-right">
                     {{ loading ? 'Submitting...' : 'Submit' }}
                 </button>
-            </form>
-        </div>
+            </div>
+        </form>
     </WelcomeLayout>
 </template>
 
@@ -260,6 +259,10 @@ import { useValidators } from '../../composables/useValidators';
 import { useRouter } from 'vue-router';
 import type { SystemInfo } from '../../composables/SystemInfo';
 import axios from 'axios';
+import { useToast } from '../../composables/Toast'
+import { warn } from 'console';
+const { showToast } = useToast()
+
 
 // DEFINE INTERFACES FOR JSON STRUCTURE
 interface City {
@@ -581,6 +584,7 @@ const submitForm = async () => {
 
     // STOP IF THERE ARE ERRORS
     if (hasErrors) {
+        showToast('error', "You have to fill all the fields", 5000, 'right-bottom');
         return;
     }
 
@@ -666,6 +670,8 @@ const submitForm = async () => {
 
         localStorage.removeItem('companyFormData');
 
+        showToast('success', "Successfully completed all setup", 5000, 'right-bottom');
+
         // Reset the form
         // companyName.value = '';
         // selectedCountry.value = '';
@@ -692,6 +698,7 @@ const submitForm = async () => {
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to submit the form. Please try again later.');
+        showToast('success', "Something went wrong", 5000, 'right-bottom');
     } finally {
         loading.value = false;
     }

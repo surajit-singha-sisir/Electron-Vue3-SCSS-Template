@@ -129,9 +129,9 @@ import { RouterLink, useRouter } from 'vue-router';
 import ModalBox from '../../components/UI/ModalBox.vue';
 import { useToast } from '../../composables/Toast'
 const { showToast } = useToast()
+// showToast('info', "This is a toast message", 300000, 'right-bottom');
 import axios from 'axios';
 
-// showToast('info', "This is a toast message", 300000, 'right-bottom');
 
 // Form data for trial registration
 const formData = reactive({

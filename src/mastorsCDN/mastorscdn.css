@@ -16,6 +16,10 @@
   width: 90%;
 }
 
+.w-95 {
+  width: 95%;
+}
+
 .w-100 {
   width: 100%;
 }
@@ -156,6 +160,12 @@
 .f-center {
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.f-end-center {
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
 }
 
