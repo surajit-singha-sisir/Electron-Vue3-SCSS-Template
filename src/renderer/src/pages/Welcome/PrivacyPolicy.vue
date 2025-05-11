@@ -8,6 +8,7 @@
                         aria-label="Visit Kehem IT website">KEHEM IT</RouterLink>
                 </p>
             </div><br>
+            <button type="button" @click="handlePrevious" class="btn btn-secondary">Previous</button>
             <section class="onuman-tos onuman-scrollbar" ref="tosSection" @scroll="handleScroll" role="region"
                 aria-label="Terms of Service Content" tabindex="0">
                 <div class="tos-content">
@@ -185,6 +186,9 @@ const handleScroll = () => {
 };
 
 const router = useRouter();
+const handlePrevious = () => {
+    router.push("/license");
+};
 const handleNext = () => {
     router.push("/CompanyInfo");
 };

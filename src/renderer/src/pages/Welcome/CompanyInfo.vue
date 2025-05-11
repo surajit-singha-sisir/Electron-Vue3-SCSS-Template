@@ -144,6 +144,18 @@
                             {{ officeEmailAddressError }}
                         </span>
                     </div>
+                    <div class="onuman-input-box">
+                        <label for="company-logo-input" id="company-logo-label">Company Logo</label>
+                        <Tooltip content="Recommended: 400x400px" position="top" id="company-logo-tooltip">
+                            <input type="file" id="company-logo-input" name="companyLogo" class="onuman-input2"
+                                @change="handleCompanyLogo" accept="image/*" aria-labelledby="company-logo-label"
+                                aria-describedby="company-logo-tooltip company-logo-error" aria-required="true"
+                                :aria-valid="!!companyLogoError">
+                        </Tooltip>
+                        <span v-if="companyLogoError" class="red" id="company-logo-error">
+                            {{ companyLogoError }}
+                        </span>
+                    </div>
                 </aside>
 
                 <!-- EMPLOYEE INFORMATION -->
@@ -209,7 +221,18 @@
                         <span v-if="employeeEmailError" class="red">{{ employeeEmailError }}</span>
                     </div>
 
-
+                    <div class="onuman-input-box">
+                        <label for="employee-logo-input" id="employee-logo-label">Your Profile Picture</label>
+                        <Tooltip content="Recommended: 400x400px" position="top" id="employee-logo-tooltip">
+                            <input type="file" id="employee-logo-input" name="employeeLogo" class="onuman-input2"
+                                @change="handleEmployeeLogo" accept="image/*" aria-labelledby="employee-logo-label"
+                                aria-describedby="employee-logo-tooltip employee-logo-error" aria-required="true"
+                                :aria-valid="!!employeeLogoError">
+                        </Tooltip>
+                        <span v-if="employeeLogoError" class="red" id="employee-logo-error">
+                            {{ employeeLogoError }}
+                        </span>
+                    </div>
                 </aside>
 
 
@@ -221,6 +244,12 @@
         </div>
     </WelcomeLayout>
 </template>
+
+
+
+
+
+
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import WelcomeLayout from '../../layouts/WelcomeLayout.vue';
@@ -229,6 +258,8 @@ import OnumanCombobox from '../../components/OnumanCombobox.vue';
 import Tooltip from '../../components/ToolTip.vue';
 import { useValidators } from '../../composables/useValidators';
 import { useRouter } from 'vue-router';
+import type { SystemInfo } from '../../composables/SystemInfo';
+import axios from 'axios';
 
 // DEFINE INTERFACES FOR JSON STRUCTURE
 interface City {
@@ -310,6 +341,10 @@ const addressLineError = ref<string>('');
 const zipCode = ref<string>('');
 const zipCodeError = ref<string>('');
 
+// COMPANY LOGO
+const companyLogoFile = ref<File | null>(null);
+const companyLogoError = ref<string>('');
+
 // PHONE NUMBER VALIDATION
 const officePhoneNumber = ref<string>('');
 const { isValidPhone, formatPhoneNumber } = usePhoneValidator(officePhoneNumber);
@@ -328,6 +363,7 @@ const employeeDesignation = ref<string>('');
 const employeeId = ref<string>('');
 const employeePhone = ref<string>('');
 const employeeEmail = ref<string>('');
+const employeeLogoFile = ref<File | null>(null);
 
 // EMPLOYEE ERROR STATES
 const employeeNameError = ref<string>('');
@@ -335,6 +371,7 @@ const employeeDesignationError = ref<string>('');
 const employeeIdError = ref<string>('');
 const employeePhoneError = ref<string>('');
 const employeeEmailError = ref<string>('');
+const employeeLogoError = ref<string>('');
 
 // PHONE/EMAIL VALIDATION
 const { isValidPhone: isEmployeePhoneValid, formatPhoneNumber: formatEmployeePhoneNumber } = usePhoneValidator(employeePhone);
@@ -345,8 +382,66 @@ const officePhoneNumberError = ref<string>('');
 // OFFICE EMAIL
 const officeEmailAddressError = ref<string>('');
 
-// LOAD SAVED DATA FROM LOCALSTORAGE ON MOUNT
-onMounted(() => {
+// SYSTEM INFO
+const systemInfo = ref<SystemInfo | null>(null);
+const serialNumber = ref<string>('Not fetched');
+
+// FILE HANDLING
+const handleCompanyLogo = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+        companyLogoFile.value = input.files[0];
+        companyLogoError.value = '';
+    } else {
+        companyLogoFile.value = null;
+    }
+};
+
+const handleEmployeeLogo = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+        employeeLogoFile.value = input.files[0];
+        employeeLogoError.value = '';
+    } else {
+        employeeLogoFile.value = null;
+    }
+};
+
+// FETCH SYSTEM INFO
+const fetchSystemInfo = async () => {
+    try {
+        const info = await window.electronAPI.getSystemInfo();
+        systemInfo.value = info;
+    } catch (error) {
+        console.error('Failed to fetch system info:', error);
+    }
+};
+
+const fetchSerialNumber = async () => {
+    try {
+        serialNumber.value = await window.electronAPI.getMotherboardSerial();
+    } catch (error) {
+        console.error('Error fetching motherboard serial:', error);
+        serialNumber.value = 'Failed to fetch';
+    }
+};
+
+// LICENSE KEY HANDLING
+// LICENSE KEY
+const keyParts = ref(['', '', '', '']);
+const retrievedKey = ref('');
+
+const retrieveLicenseKey = async () => {
+    try {
+        const storedKey = await window.electronAPI.getLicenseKey();
+        retrievedKey.value = storedKey;
+    } catch (error) {
+        console.error('Failed to retrieve license key:', error);
+        retrievedKey.value = 'Failed to retrieve license key';
+    }
+};
+// LOAD SAVED DATA AND LICENSE KEY ON MOUNT
+onMounted(async () => {
     const savedData = localStorage.getItem('companyFormData');
     if (savedData) {
         try {
@@ -371,9 +466,12 @@ onMounted(() => {
             console.error('Error parsing saved form data:', e);
         }
     }
+    await retrieveLicenseKey();
 });
+
 const loading = ref(false);
 const router = useRouter();
+
 // FORM SUBMISSION HANDLER
 const submitForm = async () => {
     let hasErrors = false;
@@ -387,11 +485,13 @@ const submitForm = async () => {
     zipCodeError.value = '';
     officePhoneNumberError.value = '';
     officeEmailAddressError.value = '';
+    companyLogoError.value = '';
     employeeNameError.value = '';
     employeeDesignationError.value = '';
     employeeIdError.value = '';
     employeePhoneError.value = '';
     employeeEmailError.value = '';
+    employeeLogoError.value = '';
 
     // CHECK REQUIRED COMPANY FIELDS
     if (!companyName.value) {
@@ -438,6 +538,10 @@ const submitForm = async () => {
     } else if (errorMessage.value) {
         hasErrors = true;
     }
+    if (!companyLogoFile.value) {
+        companyLogoError.value = 'Company logo is required';
+        hasErrors = true;
+    }
 
     // CHECK REQUIRED EMPLOYEE FIELDS
     if (!employeeName.value) {
@@ -466,84 +570,130 @@ const submitForm = async () => {
         employeeEmailError.value = 'Enter a valid email address';
         hasErrors = true;
     }
+    if (!employeeLogoFile.value) {
+        employeeLogoError.value = 'Profile picture is required';
+        hasErrors = true;
+    }
+    if (!retrievedKey.value || retrievedKey.value === 'No valid license key found' || retrievedKey.value === 'Failed to retrieve license key') {
+        alert('A valid license key is required');
+        hasErrors = true;
+    }
 
     // STOP IF THERE ARE ERRORS
     if (hasErrors) {
         return;
     }
 
-    // COLLECT FORM DATA (INCLUDE COMPANY AND EMPLOYEE INFO)
-    const formData = {
-        company: {
-            companyName: companyName.value,
-            country: selectedCountry.value,
-            state: selectedState.value,
-            city: selectedCity.value,
-            addressLine: addressLine.value,
-            zipCode: zipCode.value,
-            tradeLicense: tradeLicense.value,
-            phoneNumber: officePhoneNumber.value,
-            emailAddress: officeEmailAddress.value,
-        },
-        employee: {
-            employeeName: employeeName.value,
-            employeeDesignation: employeeDesignation.value,
-            employeeId: employeeId.value,
-            employeePhone: employeePhone.value,
-            employeeEmail: employeeEmail.value,
-        },
+    // FETCH SYSTEM INFO
+    await fetchSystemInfo();
+    await fetchSerialNumber();
+
+    // PREPARE FORM DATA
+    const formData = new FormData();
+    formData.append('companyName', companyName.value);
+    formData.append('addressLine', addressLine.value);
+    formData.append('zipCode', zipCode.value);
+    formData.append('phoneNumber', officePhoneNumber.value);
+    formData.append('tradeLicense', tradeLicense.value);
+    formData.append('emailAddress', officeEmailAddress.value);
+    formData.append('license_key', retrievedKey.value);
+    formData.append('country', selectedCountry.value);
+    formData.append('state', selectedState.value);
+    formData.append('city', selectedCity.value);
+
+    // ADD COMPANY LOGO
+    if (companyLogoFile.value) {
+        formData.append('logo', companyLogoFile.value);
+    }
+
+    // PREPARE EMPLOYEE DATA
+    const employeeData = {
+        employeeName: employeeName.value,
+        employeeDesignation: employeeDesignation.value,
+        employeeId: employeeId.value,
+        employeePhone: employeePhone.value,
+        EmployeeEmail: employeeEmail.value,
+        serial_number: serialNumber.value,
+        host_name: systemInfo.value?.hostname || 'Unknown',
+        os: systemInfo.value?.platform || 'Unknown',
+        ram: systemInfo.value?.totalMemory
+            ? `${Math.round(systemInfo.value.totalMemory / (1024 * 1024 * 1024))}GB`
+            : 'Unknown',
+        cpu: systemInfo.value?.cpus?.[0]?.model || 'Unknown',
+        mac: systemInfo.value?.networkInterfaces?.[Object.keys(systemInfo.value.networkInterfaces)[0]]?.[0]?.mac || 'Unknown',
+        access: true
     };
+
+    // ADD EMPLOYEE DATA AND PROFILE PICTURE
+    formData.append('employees', JSON.stringify([employeeData]));
+    if (employeeLogoFile.value) {
+        formData.append('photo', employeeLogoFile.value);
+    }
 
     // SAVE TO LOCALSTORAGE
     try {
-        localStorage.setItem('companyFormData', JSON.stringify(formData));
+        const storageData = {
+            company: {
+                companyName: companyName.value,
+                country: selectedCountry.value,
+                state: selectedState.value,
+                city: selectedCity.value,
+                addressLine: addressLine.value,
+                zipCode: zipCode.value,
+                tradeLicense: tradeLicense.value,
+                phoneNumber: officePhoneNumber.value,
+                emailAddress: officeEmailAddress.value,
+            },
+            employee: {
+                employeeName: employeeName.value,
+                employeeDesignation: employeeDesignation.value,
+                employeeId: employeeId.value,
+                employeePhone: employeePhone.value,
+                employeeEmail: employeeEmail.value,
+            },
+        };
+        localStorage.setItem('companyFormData', JSON.stringify(storageData));
     } catch (e) {
         console.error('Error saving to localStorage:', e);
     }
 
-    console.log('Form data to be submitted:', formData);
-
     // SEND DATA TO API
     try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
+        loading.value = true;
+        const response = await axios.post('http://192.168.0.111:8000/api/org_info', formData);
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        console.log('API response:', result);
+        console.log('API response:', response.data);
 
         localStorage.removeItem('companyFormData');
 
         // Reset the form
-        companyName.value = '';
-        selectedCountry.value = '';
-        selectedState.value = '';
-        selectedCity.value = '';
-        addressLine.value = '';
-        zipCode.value = '';
-        tradeLicense.value = '';
-        officePhoneNumber.value = '';
-        officeEmailAddress.value = '';
-        employeeName.value = '';
-        employeeDesignation.value = '';
-        employeeId.value = '';
-        employeePhone.value = '';
-        employeeEmail.value = '';
+        // companyName.value = '';
+        // selectedCountry.value = '';
+        // selectedState.value = '';
+        // selectedCity.value = '';
+        // addressLine.value = '';
+        // zipCode.value = '';
+        // tradeLicense.value = '';
+        // officePhoneNumber.value = '';
+        // officeEmailAddress.value = '';
+        // companyLogoFile.value = null;
+        // employeeName.value = '';
+        // employeeDesignation.value = '';
+        // employeeId.value = '';
+        // employeePhone.value = '';
+        // employeeEmail.value = '';
+        // employeeLogoFile.value = null;
+        // systemInfo.value = null;
+        // serialNumber.value = 'Not fetched';
+        // retrievedKey.value = '';
 
+        // Only navigate on success
+        // router.push('/welcome');
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to submit the form. Please try again later.');
     } finally {
         loading.value = false;
-        router.push('/welcome');
     }
 };
 </script>

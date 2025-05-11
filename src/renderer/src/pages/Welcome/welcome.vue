@@ -26,7 +26,7 @@ const router = useRouter();
 const confettiCanvas = ref<HTMLCanvasElement | null>(null);
 
 const goToDashboard = () => {
-    // router.push('/dashboard');
+    router.push('/companyInfo');
 };
 
 const createConfetti = () => {

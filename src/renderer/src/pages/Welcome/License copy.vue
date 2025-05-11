@@ -8,11 +8,19 @@
                         DEVELOPED BY <RouterLink to="https://kehem.com">KEHEM IT</RouterLink>
                     </p>
                 </div><br>
-
-
+                <div>
+                    <h1>System Information</h1>
+                    <p>{{ systemInfo ? JSON.stringify(systemInfo) : 'Loading...' }}</p>
+                </div><br>
+                <button @click="saveLicenseKey">Store License Key</button>
+                <button @click="retrieveLicenseKey">Retrieve License Key</button>
+                <div>
+                    <h2>Motherboard Serial Number</h2>
+                    <p>{{ serialNumber }}</p>
+                    <button @click="fetchSerialNumber">Get Serial Number</button>
+                </div>
                 <div class="licenser">
                     <h1 class="m-b-10">Activate your product</h1>
-                    <p v-if="licenseError" class="red" role="alert">{{ licenseError }}</p>
                     <div class="license-key f-center">
                         <div class="f-center gap-03">
                             <input type="text" maxlength="4" v-model="keyParts[0]" @input="handleInput(0)"
@@ -37,13 +45,14 @@
                         </div>
                         <aside class="w-100 f f-col gap-10">
                             <button type="button" class="btn btn-calm w-100" tabindex="6" aria-label="Activate product"
-                                @click="activateLicense">
+                                @click="gotToPrivacyPolicy">
                                 Activate
                             </button>
                             <div class="text-right">
                                 <div class="get-trial cur-pointer" @click="openModal" tabindex="7" role="button"
                                     aria-label="Get 7 days trial" @keydown.enter="openModal"
-                                    @keydown.space.prevent="openModal">Get 7 days trial
+                                    @keydown.space.prevent="openModal">
+                                    Get 7 days trial
                                 </div>
                             </div>
                         </aside>
@@ -127,11 +136,8 @@ import { ref, onMounted, watch, reactive } from 'vue';
 import WelcomeLayout from '../../layouts/WelcomeLayout.vue';
 import { RouterLink, useRouter } from 'vue-router';
 import ModalBox from '../../components/UI/ModalBox.vue';
-import { useToast } from '../../composables/Toast'
-const { showToast } = useToast()
+import type { SystemInfo } from '../../composables/SystemInfo';
 import axios from 'axios';
-
-// showToast('info', "This is a toast message", 300000, 'right-bottom');
 
 // Form data for trial registration
 const formData = reactive({
@@ -169,56 +175,86 @@ const submitTrial = async () => {
             phone: formData.phone,
             email: formData.email,
         });
-        console.log('Trial submission successful:', response.data);
+        console.log('Submission successful:', response.data);
         closeModal();
     } catch (error) {
-        console.error('Trial submission error:', error);
+        console.error('Submission error:', error);
     }
 };
 
 // License key handling
 const keyParts = ref(['', '', '', '']);
 const inputs = ref<(HTMLInputElement | null)[]>([]);
-const licenseError = ref('');
+const retrievedKey = ref('');
 
+// Construct license key from keyParts
 const getLicenseKey = () => {
-    return keyParts.value.join('');
+    return keyParts.value.filter(part => part.length === 4).join('-');
 };
 
-
-// Activate license
-const router = useRouter();
-const activateLicense = async () => {
-    const licenseKey = getLicenseKey().toLowerCase();
-    if (licenseKey.length !== 16) {
-        licenseError.value = 'License key must be 16 characters';
-        router.push('/PrivacyPolicy');
+// Save license key
+const saveLicenseKey = async () => {
+    const licenseKey = getLicenseKey();
+    if (licenseKey.length !== 19) {
+        console.error('Invalid license key format');
         return;
     }
     try {
-        const response = await axios.get(`http://192.168.0.111:8000/api/verify/${licenseKey}`);
-        if (response.data.status === true) {
-            licenseError.value = '';
-            await window.electronAPI.storeLicenseKey(licenseKey);
-
-        } else {
-            licenseError.value = 'License Expired';
-        }
+        await window.electronAPI.storeLicenseKey(licenseKey);
+        console.log('License key stored:', licenseKey);
     } catch (error) {
-        console.error('License activation error:', error);
-        licenseError.value = 'Failed to verify license';
-        router.push('/PrivacyPolicy');
+        console.error('Failed to store license key:', error);
     }
 };
 
+// Retrieve license key
+const retrieveLicenseKey = async () => {
+    try {
+        const storedKey = await window.electronAPI.getLicenseKey();
+        if (storedKey && storedKey.match(/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)) {
+            keyParts.value = storedKey.split('-');
+            retrievedKey.value = storedKey;
+            console.log('License key retrieved:', storedKey);
+        } else {
+            retrievedKey.value = 'No valid license key found';
+        }
+    } catch (error) {
+        console.error('Failed to retrieve license key:', error);
+        retrievedKey.value = 'Failed to retrieve license key';
+    }
+};
+
+// System info
+const systemInfo = ref<SystemInfo | null>(null);
+const fetchSystemInfo = async () => {
+    try {
+        const info = await window.electronAPI.getSystemInfo();
+        systemInfo.value = info;
+    } catch (error) {
+        console.error('Failed to fetch system info:', error);
+    }
+};
+
+// Motherboard serial number
+const serialNumber = ref<string>('Not fetched');
+const fetchSerialNumber = async () => {
+    try {
+        serialNumber.value = await window.electronAPI.getMotherboardSerial();
+    } catch (error) {
+        console.error('Error fetching motherboard serial:', error);
+        serialNumber.value = 'Failed to fetch';
+    }
+};
+
+// Modal handling
 const isModalOpen = ref(false);
 const openModal = () => {
     isModalOpen.value = true;
-    showToast('success', "This is a toast message");
 };
 const closeModal = () => {
     isModalOpen.value = false;
     formSubmitted.value = false;
+    // Reset form
     formData.companyName = '';
     formData.address = '';
     formData.personName = '';
@@ -318,6 +354,12 @@ const pasteKey = async () => {
     }
 };
 
+// Navigation
+const router = useRouter();
+const gotToPrivacyPolicy = () => {
+    router.push('/PrivacyPolicy');
+};
+
 // Initialize on mount
 onMounted(() => {
     inputs.value = [
@@ -326,5 +368,7 @@ onMounted(() => {
         document.querySelector('#key-part-3') as HTMLInputElement,
         document.querySelector('#key-part-4') as HTMLInputElement,
     ];
+    fetchSystemInfo();
+    retrieveLicenseKey();
 });
 </script>

@@ -3,6 +3,19 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+const Store = require('electron-store')
+const store = new Store.default()
+
+// IPC handler for storing license key
+ipcMain.handle('store-license-key', async (_event, licenseKey: string) => {
+  store.set('licenseKey', licenseKey)
+})
+
+// IPC handler for retrieving license key
+ipcMain.handle('get-license-key', async () => {
+  return store.get('licenseKey') || ''
+})
+
 const os = require('os')
 function getSystemInfo() {
   return {
