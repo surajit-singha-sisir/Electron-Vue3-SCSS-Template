@@ -7,6 +7,15 @@
                     <p class="text-sm text-right m-t--05">DEVELOPED BY <RouterLink to="https://kehem.com">KEHEM IT
                         </RouterLink>
                     </p>
+                </div><br>
+                <div>
+                    <h1>System Information</h1>
+                    <p>{{ systemInfo }}</p>
+                </div><br>
+                <div>
+                    <h2>Motherboard Serial Number</h2>
+                    <p>{{ serialNumber }}</p>
+                    <button @click="fetchSerialNumber">Get Serial Number</button>
                 </div>
                 <div class="licenser">
                     <h1 class="m-b-10">Activate your product</h1>
@@ -104,11 +113,77 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import WelcomeLayout from '../../layouts/WelcomeLayout.vue';
 import { RouterLink, useRouter } from 'vue-router';
 import ModalBox from '../../components/UI/ModalBox.vue';
+import type { SystemInfo } from '../../composables/SystemInfo';
+
+const systemInfo = ref<SystemInfo | null>(null)
+
+const fetchSystemInfo = async () => {
+    try {
+        const info = await window.electronAPI.getSystemInfo()
+        systemInfo.value = info
+    } catch (error) {
+        console.error('Failed to fetch system info:', error)
+    }
+}
+
+onMounted(() => {
+    fetchSystemInfo()
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+interface ElectronAPI {
+    getMotherboardSerial: () => Promise<string>;
+}
+
+const electronAPI = (window as any).electronAPI as ElectronAPI;
+
+const serialNumber = ref<string>('Not fetched');
+
+const fetchSerialNumber = async () => {
+    try {
+        serialNumber.value = await electronAPI.getMotherboardSerial();
+    } catch (error) {
+        console.error('Error fetching motherboard serial:', error);
+        serialNumber.value = 'Failed to fetch';
+    }
+};
+
+
+
+
+
+
+
+
+
 
 const isModalOpen = ref(false)
 

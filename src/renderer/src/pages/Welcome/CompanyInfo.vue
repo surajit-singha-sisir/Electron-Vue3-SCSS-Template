@@ -224,7 +224,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import WelcomeLayout from '../../layouts/WelcomeLayout.vue';
-import locationData from '../../assets/jsons/country-state-city.json';
+import locationData from '../../assets/jsons/countryStateCity.json';
 import OnumanCombobox from '../../components/OnumanCombobox.vue';
 import Tooltip from '../../components/ToolTip.vue';
 import { useValidators } from '../../composables/useValidators';

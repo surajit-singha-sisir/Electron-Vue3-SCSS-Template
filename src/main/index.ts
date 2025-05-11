@@ -3,6 +3,20 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+const os = require('os')
+function getSystemInfo() {
+  return {
+    hostname: os.hostname(),
+    platform: os.platform(),
+    arch: os.arch(),
+    release: os.release(),
+    totalMemory: os.totalmem(),
+    freeMemory: os.freemem(),
+    cpus: os.cpus(),
+    networkInterfaces: os.networkInterfaces()
+  }
+}
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -15,7 +29,8 @@ function createWindow(): void {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true, // Enable sandbox for security
-      contextIsolation: true // Enable context isolation for security
+      contextIsolation: true, // Enable context isolation for security
+      nodeIntegration: false
     }
   })
 
@@ -65,6 +80,20 @@ app.whenReady().then(() => {
       } else {
         window.maximize()
       }
+    }
+  })
+  ipcMain.handle('system-info', async () => {
+    return getSystemInfo()
+  })
+  // IPC handler to fetch motherboard serial number
+  const si = require('systeminformation')
+  ipcMain.handle('get-motherboard-serial', async () => {
+    try {
+      const motherboard = await si.baseboard()
+      return motherboard.serial || 'Unknown' // Returns serial number or 'Unknown' if not available
+    } catch (error) {
+      console.error('Error fetching motherboard serial:', error)
+      return 'Error'
     }
   })
 

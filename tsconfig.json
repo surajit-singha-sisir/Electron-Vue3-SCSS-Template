@@ -6,10 +6,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "./out",
-    "composite": false
+    "composite": false,
+     "resolveJsonModule": true
   },
   "include": [
     "electron/**/*",
-    "src/cssGenerator.ts"
+    "src/cssGenerator.ts",
+    "src/**/*", "src/types/electron.d.ts",
   ]
 }

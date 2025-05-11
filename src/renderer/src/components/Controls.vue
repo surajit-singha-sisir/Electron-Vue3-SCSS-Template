@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { SystemInfo } from '../composables/SystemInfo'
 
 const isMaximized = ref(false)
 
@@ -36,16 +37,7 @@ const maximizeWindow = async () => {
     }
 }
 
-// Optional: Declare electronAPI type for TypeScript
-declare global {
-    interface Window {
-        electronAPI: {
-            closeWindow: () => Promise<void>
-            minimizeWindow: () => Promise<void>
-            maximizeWindow: () => Promise<void>
-        }
-    }
-}
+
 </script>
 
 <style scoped>

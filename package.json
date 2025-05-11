@@ -26,7 +26,10 @@
     "@electron-toolkit/utils": "^4.0.0",
     "@vue/compiler-sfc": "^3.5.13",
     "dompurify": "^3.2.5",
+    "electron-store": "^10.0.1",
     "electron-updater": "^6.3.9",
+    "os": "^0.1.2",
+    "systeminformation": "^5.25.11",
     "vue-confetti": "^2.3.0",
     "vue-router": "^4.5.1"
   },

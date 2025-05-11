@@ -56,29 +56,29 @@ a {
   text-decoration: none;
 }
 
-body > img,
-p,
-div,
-aside {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+// body > img,
+// p,
+// div,
+// aside {
+//   user-select: none;
+//   -webkit-user-select: none;
+//   -moz-user-select: none;
+//   -ms-user-select: none;
 
-  user-drag: none;
-  -webkit-user-drag: none;
-}
-span {
-  user-select: text;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-}
-img {
-  user-drag: none;
-  -webkit-user-drag: none;
-  pointer-events: none; /* Optional: disables all mouse events */
-}
+//   user-drag: none;
+//   -webkit-user-drag: none;
+// }
+// span {
+//   user-select: text;
+//   -webkit-user-select: text;
+//   -moz-user-select: text;
+//   -ms-user-select: text;
+// }
+// img {
+//   user-drag: none;
+//   -webkit-user-drag: none;
+//   pointer-events: none; /* Optional: disables all mouse events */
+// }
 
 // GLOBAL HR
 hr {

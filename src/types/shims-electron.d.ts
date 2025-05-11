@@ -4,6 +4,7 @@ declare global {
       closeWindow: () => void
       minimizeWindow: () => void
       maximizeWindow: () => void
+      getSystemInfo: () => void
     }
   }
 }
