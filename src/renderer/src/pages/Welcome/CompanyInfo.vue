@@ -1,6 +1,7 @@
 <template>
     <WelcomeLayout>
-        <form class="main-screen h-100 w-100 f-start-center f-col gap-10" method="post" @submit.prevent="submitForm">
+        <form enctype="multipart/form-data" class="main-screen h-100 w-100 f-start-center f-col gap-10" method="post"
+            @submit.prevent="submitForm">
             <div class="onuman-logo w--100 m-t-50">
                 <img src="../../assets/images/Onuman-logo-full-white.svg" alt="Onuman Logo">
             </div><br>
@@ -9,19 +10,20 @@
                 <aside class="company-info columned">
                     <div class="company-info-warning">
                         <Tooltip class="info-tooltip"
-                            content="Further you cannot change the company information. So carefully fill the inputs"
+                            :content="hasCompanyData ? 'Company information is pre-filled and cannot be edited' : 'Further you cannot change the company information. So carefully fill the inputs'"
                             position="right" id="company-name-tooltip"><i class="m-info3"></i>
                         </Tooltip>
                     </div><br>
 
                     <div class="onuman-input-box">
                         <label for="company-name-input" id="company-name-label">Company Name</label>
-                        <Tooltip content="Enter the legal name of your company" position="top"
-                            id="company-name-tooltip">
+                        <Tooltip
+                            :content="hasCompanyData ? 'Company name is pre-filled and cannot be edited' : 'Enter the legal name of your company'"
+                            position="top" id="company-name-tooltip">
                             <input type="text" id="company-name-input" name="companyName" class="onuman-input2"
                                 placeholder="Enter your company name" v-model="companyName"
                                 aria-labelledby="company-name-label"
-                                aria-describedby="company-name-tooltip company-name-error" aria-required="true"
+                                aria-describedby="company-name-tooltip company-name-error" :disabled="hasCompanyData"
                                 :aria-invalid="!!companyNameError">
                         </Tooltip>
                         <span v-if="companyNameError" class="red" id="company-name-error">
@@ -35,12 +37,13 @@
                             <div class="auto-options-3-cols">
                                 <!-- COUNTRY COMBOBOX -->
                                 <div class="combobox-wrapper">
-                                    <Tooltip content="Select the country of your office" position="top"
-                                        id="country-tooltip">
+                                    <Tooltip
+                                        :content="hasCompanyData ? 'Country is pre-filled and cannot be edited' : 'Select the country of your office'"
+                                        position="top" id="country-tooltip">
                                         <OnumanCombobox id="onuman-combobox-country" name="country"
                                             :options="countryOptions" placeholder="Select Country"
                                             v-model:selected="selectedCountry" role="combobox"
-                                            aria-describedby="country-tooltip country-error" aria-required="true"
+                                            aria-describedby="country-tooltip country-error" :disabled="hasCompanyData"
                                             aria-controls="onuman-combobox-country-listbox" aria-expanded="false"
                                             :aria-invalid="!!countryError" tabindex="0" />
                                     </Tooltip>
@@ -50,15 +53,16 @@
                                 </div>
                                 <!-- STATE COMBOBOX -->
                                 <div class="combobox-wrapper">
-                                    <Tooltip content="Select the state or division or province" position="top"
-                                        id="state-tooltip">
+                                    <Tooltip
+                                        :content="hasCompanyData ? 'State is pre-filled and cannot be edited' : 'Select the state or division or province'"
+                                        position="top" id="state-tooltip">
                                         <OnumanCombobox id="onuman-combobox-state" name="state" :options="stateOptions"
-                                            placeholder="Select State" :disabled="!selectedCountry"
+                                            placeholder="Select State" :disabled="!selectedCountry || hasCompanyData"
                                             v-model:selected="selectedState" role="combobox"
-                                            aria-describedby="state-tooltip state-error" aria-required="true"
+                                            aria-describedby="state-tooltip state-error"
                                             aria-controls="onuman-combobox-state-listbox" aria-expanded="false"
-                                            :aria-disabled="!selectedCountry" :aria-invalid="!!stateError"
-                                            tabindex="0" />
+                                            :aria-disabled="!selectedCountry || hasCompanyData"
+                                            :aria-invalid="!!stateError" tabindex="0" />
                                     </Tooltip>
                                     <span v-if="stateError" class="red" id="state-error">
                                         {{ stateError }}
@@ -66,13 +70,16 @@
                                 </div>
                                 <!-- CITY COMBOBOX -->
                                 <div class="combobox-wrapper">
-                                    <Tooltip content="Select the city or district" position="top" id="city-tooltip">
+                                    <Tooltip
+                                        :content="hasCompanyData ? 'City is pre-filled and cannot be edited' : 'Select the city or district'"
+                                        position="top" id="city-tooltip">
                                         <OnumanCombobox id="onuman-combobox-city" name="city" :options="cityOptions"
-                                            placeholder="Select City" :disabled="!selectedState"
+                                            placeholder="Select City" :disabled="!selectedState || hasCompanyData"
                                             v-model:selected="selectedCity" role="combobox"
-                                            aria-describedby="city-tooltip city-error" aria-required="true"
+                                            aria-describedby="city-tooltip city-error"
                                             aria-controls="onuman-combobox-city-listbox" aria-expanded="false"
-                                            :aria-disabled="!selectedState" :aria-invalid="!!cityError" tabindex="0" />
+                                            :aria-disabled="!selectedState || hasCompanyData"
+                                            :aria-invalid="!!cityError" tabindex="0" />
                                     </Tooltip>
                                     <span v-if="cityError" class="red" id="city-error">
                                         {{ cityError }}
@@ -83,14 +90,14 @@
                                 <input type="text" id="address-line-input" name="addressLine"
                                     class="onuman-input2 span-2" placeholder="Ex: Region, Building, Floor, Shop no."
                                     v-model="addressLine" aria-labelledby="office-address-legend"
-                                    aria-describedby="address-line-error" aria-required="true"
+                                    aria-describedby="address-line-error" :disabled="hasCompanyData"
                                     :aria-invalid="!!addressLineError" />
                                 <span v-if="addressLineError" class="red" id="address-line-error">
                                     {{ addressLineError }}
                                 </span>
                                 <input type="text" id="zip-code-input" name="zipCode" class="onuman-input2"
                                     placeholder="ZIP Code" v-model="zipCode" aria-labelledby="office-address-legend"
-                                    aria-describedby="zip-code-error" aria-required="true"
+                                    aria-describedby="zip-code-error" :disabled="hasCompanyData"
                                     :aria-invalid="!!zipCodeError" />
                                 <span v-if="zipCodeError" class="red" id="zip-code-error">
                                     {{ zipCodeError }}
@@ -103,13 +110,14 @@
                         <label for="company-trade-license-input" id="trade-license-label">
                             Trade License No.
                         </label>
-                        <Tooltip content="Enter the local authorization number. Ex: TIN/EIN/BIN" position="top"
-                            id="trade-license-tooltip">
+                        <Tooltip
+                            :content="hasCompanyData ? 'Trade license is pre-filled and cannot be edited' : 'Enter the local authorization number. Ex: TIN/EIN/BIN'"
+                            position="top" id="trade-license-tooltip">
                             <input v-model="tradeLicense" type="text" id="company-trade-license-input"
                                 name="tradeLicense" class="onuman-input2" placeholder="Enter your trade license number"
                                 :class="{ 'input-error': errorMessage }" maxlength="18"
                                 aria-labelledby="trade-license-label"
-                                aria-describedby="trade-license-tooltip trade-license-error" aria-required="true"
+                                aria-describedby="trade-license-tooltip trade-license-error" :disabled="hasCompanyData"
                                 :aria-invalid="!!errorMessage" />
                         </Tooltip>
                         <p v-if="errorMessage" class="red" id="trade-license-error">{{ errorMessage }}</p>
@@ -120,7 +128,7 @@
                         <input type="text" id="office-phone-number-input" name="phoneNumber" class="onuman-input2"
                             v-model="officePhoneNumber" placeholder="+1-123-456-7890" maxlength="17"
                             @input="formatPhoneNumber(officePhoneNumber)" aria-labelledby="phone-number-label"
-                            aria-describedby="phone-number-error" aria-required="true"
+                            aria-describedby="phone-number-error" :disabled="hasCompanyData"
                             :aria-invalid="!isValidPhone && !!officePhoneNumber" />
                         <span v-if="!isValidPhone && officePhoneNumber" class="red" id="phone-number-error">
                             Please enter a valid phone number (e.g., +1-123-456-7890)
@@ -136,7 +144,7 @@
                         <input type="text" id="office-email-address-input" name="emailAddress" class="onuman-input2"
                             v-model="officeEmailAddress" placeholder="yourname@domain.com" maxlength="100"
                             aria-labelledby="email-address-label" aria-describedby="email-address-error"
-                            aria-required="true" :aria-invalid="!isValidEmail && !!officeEmailAddress" />
+                            :disabled="hasCompanyData" :aria-invalid="!isValidEmail && !!officeEmailAddress" />
                         <span v-if="!isValidEmail && officeEmailAddress" class="red" id="email-address-error">
                             Please enter a valid email address (e.g., yourname@domain.com)
                         </span>
@@ -146,10 +154,13 @@
                     </div>
                     <div class="onuman-input-box">
                         <label for="company-logo-input" id="company-logo-label">Company Logo</label>
-                        <Tooltip content="Recommended: 400x400px" position="top" id="company-logo-tooltip">
+                        <Tooltip
+                            :content="hasCompanyData ? 'Company logo is pre-filled and cannot be edited' : 'Recommended: 400x400px'"
+                            position="top" id="company-logo-tooltip">
                             <input type="file" id="company-logo-input" name="companyLogo" class="onuman-input2"
-                                @change="handleCompanyLogo" accept="image/*" aria-labelledby="company-logo-label"
-                                aria-describedby="company-logo-tooltip company-logo-error" aria-required="true"
+                                @change="handleCompanyLogo" accept="image/jpeg, image/png, image/svg+xml"
+                                aria-labelledby="company-logo-label"
+                                aria-describedby="company-logo-tooltip company-logo-error" :disabled="hasCompanyData"
                                 :aria-valid="!!companyLogoError">
                         </Tooltip>
                         <span v-if="companyLogoError" class="red" id="company-logo-error">
@@ -171,7 +182,7 @@
                             aria-labelledby="employee-name-label" aria-describedby="employee-name-error"
                             maxlength="200">
                         <span v-if="employeeNameError" class="red" id="employee-name-error">{{ employeeNameError
-                            }}</span>
+                        }}</span>
                     </div>
 
                     <!-- Your Designation -->
@@ -244,11 +255,6 @@
     </WelcomeLayout>
 </template>
 
-
-
-
-
-
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import WelcomeLayout from '../../layouts/WelcomeLayout.vue';
@@ -259,12 +265,12 @@ import { useValidators } from '../../composables/useValidators';
 import { useRouter } from 'vue-router';
 import type { SystemInfo } from '../../composables/SystemInfo';
 import axios from 'axios';
-import { useToast } from '../../composables/Toast'
-import { warn } from 'console';
-const { showToast } = useToast()
+import { useToast } from '../../composables/Toast';
 
+const { showToast } = useToast();
+let hasErrors = false;
 
-// DEFINE INTERFACES FOR JSON STRUCTURE
+// Define interfaces for JSON structure
 interface City {
     name: string;
 }
@@ -277,98 +283,96 @@ interface Country {
     states: State[];
 }
 
-// TYPE THE IMPORTED JSON DATA
+// Define interface for API response
+interface Company {
+    id: number;
+    companyName: string;
+    Logo: string;
+    country: string;
+    state: string;
+    city: string;
+    addressLine: string;
+    zipCode: string;
+    tradeLicense: string;
+    phoneNumber: string;
+    emailAddress: string;
+    created_at: string;
+    license_key: number;
+}
+
+interface OrgData {
+    companies: Company[];
+}
+
+// Type the imported JSON data
 const locations = ref<Country[]>(locationData as Country[]);
 const error = ref<string | null>(null);
 
-// REACTIVE STATE FOR SELECTIONS
+// Reactive state for selections
 const selectedCountry = ref<string>('');
 const selectedState = ref<string>('');
 const selectedCity = ref<string>('');
 
-// COMPUTE COUNTRY OPTIONS
+// Compute country options
 const countryOptions = computed(() =>
     locations.value.map((country) => country.name).sort()
 );
 
-// COMPUTE STATE OPTIONS BASED ON SELECTED COUNTRY
+// Compute state options based on selected country
 const stateOptions = computed(() => {
     const country = locations.value.find((c) => c.name === selectedCountry.value);
     return country ? country.states.map((state) => state.name).sort() : [];
 });
 
-// COMPUTE CITY OPTIONS BASED ON SELECTED STATE
+// Compute city options based on selected state
 const cityOptions = computed(() => {
     const country = locations.value.find((c) => c.name === selectedCountry.value);
     const state = country?.states.find((s) => s.name === selectedState.value);
     return state ? state.cities.map((city) => city.name).sort() : [];
 });
 
-// WATCH COUNTRY SELECTION TO RESET STATE AND CITY
+// Watch country selection to reset state and city
 watch(selectedCountry, () => {
     selectedState.value = '';
     selectedCity.value = '';
 });
 
-// WATCH STATE SELECTION TO RESET CITY
+// Watch state selection to reset city
 watch(selectedState, () => {
     selectedCity.value = '';
 });
 
-// HANDLE JSON LOADING ERROR
+// Handle JSON loading error
 if (!locationData || !Array.isArray(locationData)) {
     error.value = 'FAILED TO LOAD OR PARSE COUNTRY-STATE-CITY.JSON';
 }
 
-// USE VALIDATORS
+// Use validators
 const { usePhoneValidator, useEmailValidator, useTradeLicenseValidator } = useValidators();
 
-// COMPANY NAME
+// Company fields
 const companyName = ref<string>('');
 const companyNameError = ref<string>('');
-
-// COUNTRY
 const countryError = ref<string>('');
-
-// STATE
 const stateError = ref<string>('');
-
-// CITY
 const cityError = ref<string>('');
-
-// ADDRESS LINE
 const addressLine = ref<string>('');
 const addressLineError = ref<string>('');
-
-// ZIP CODE
 const zipCode = ref<string>('');
 const zipCodeError = ref<string>('');
-
-// COMPANY LOGO
 const companyLogoFile = ref<File | null>(null);
 const companyLogoError = ref<string>('');
-
-// PHONE NUMBER VALIDATION
 const officePhoneNumber = ref<string>('');
-const { isValidPhone, formatPhoneNumber } = usePhoneValidator(officePhoneNumber);
-
-// EMAIL VALIDATION
 const officeEmailAddress = ref<string>('');
-const { isValidEmail } = useEmailValidator(officeEmailAddress);
-
-// TRADE LICENSE VALIDATION
 const tradeLicense = ref<string>('');
-const { errorMessage } = useTradeLicenseValidator(tradeLicense);
 
-// EMPLOYEE INFORMATION
+// Employee fields
 const employeeName = ref<string>('');
 const employeeDesignation = ref<string>('');
 const employeeId = ref<string>('');
 const employeePhone = ref<string>('');
 const employeeEmail = ref<string>('');
 const employeeLogoFile = ref<File | null>(null);
-
-// EMPLOYEE ERROR STATES
 const employeeNameError = ref<string>('');
 const employeeDesignationError = ref<string>('');
 const employeeIdError = ref<string>('');
@@ -376,20 +380,25 @@ const employeePhoneError = ref<string>('');
 const employeeEmailError = ref<string>('');
 const employeeLogoError = ref<string>('');
 
-// PHONE/EMAIL VALIDATION
+// Validation
+const { isValidPhone, formatPhoneNumber } = usePhoneValidator(officePhoneNumber);
+const { isValidEmail } = useEmailValidator(officeEmailAddress);
+const { errorMessage } = useTradeLicenseValidator(tradeLicense);
 const { isValidPhone: isEmployeePhoneValid, formatPhoneNumber: formatEmployeePhoneNumber } = usePhoneValidator(employeePhone);
 const { isValidEmail: isEmployeeEmailValid } = useEmailValidator(employeeEmail);
-
-// OFFICE PHONE
 const officePhoneNumberError = ref<string>('');
-// OFFICE EMAIL
 const officeEmailAddressError = ref<string>('');
 
-// SYSTEM INFO
+// System info
 const systemInfo = ref<SystemInfo | null>(null);
 const serialNumber = ref<string>('Not fetched');
 
-// FILE HANDLING
+// API data
+const getOrgData = ref<OrgData>({ companies: [] });
+const retrievedKey = ref<string>('');
+const hasCompanyData = ref<boolean>(false);
+
+// File handling
 const handleCompanyLogo = (event: Event) => {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -410,7 +419,7 @@ const handleEmployeeLogo = (event: Event) => {
     }
 };
 
-// FETCH SYSTEM INFO
+// Fetch system info
 const fetchSystemInfo = async () => {
     try {
         const info = await window.electronAPI.getSystemInfo();
@@ -429,11 +438,7 @@ const fetchSerialNumber = async () => {
     }
 };
 
-// LICENSE KEY HANDLING
-// LICENSE KEY
-const keyParts = ref(['', '', '', '']);
-const retrievedKey = ref('');
-
+// Retrieve license key
 const retrieveLicenseKey = async () => {
     try {
         const storedKey = await window.electronAPI.getLicenseKey();
@@ -441,25 +446,54 @@ const retrieveLicenseKey = async () => {
     } catch (error) {
         console.error('Failed to retrieve license key:', error);
         retrievedKey.value = 'Failed to retrieve license key';
+        showToast('error', "You haven't any license key");
     }
 };
-// LOAD SAVED DATA AND LICENSE KEY ON MOUNT
+
+// Fetch default data
+const getDefaultData = async () => {
+    try {
+        const response = await axios.get(`http://192.168.0.111:8000/api/get_org/${retrievedKey.value}`);
+        getOrgData.value = { companies: response.data };
+        hasErrors = false;
+
+        if (getOrgData.value.companies.length > 0) {
+            hasCompanyData.value = true;
+            const company = getOrgData.value.companies[0];
+            companyName.value = company.companyName || '';
+            selectedCountry.value = company.country || '';
+            selectedState.value = company.state || '';
+            selectedCity.value = company.city || '';
+            addressLine.value = company.addressLine || '';
+            zipCode.value = company.zipCode || '';
+            tradeLicense.value = company.tradeLicense || '';
+            officePhoneNumber.value = company.phoneNumber || '';
+            officeEmailAddress.value = company.emailAddress || '';
+        }
+    } catch (error) {
+        console.error('Failed to fetch default data:', error);
+        showToast('error', 'Failed to load default organization data', 5000, 'right-bottom');
+    }
+};
+
+// Load saved data and license key on mount
 onMounted(async () => {
+    // Load saved form data from localStorage
     const savedData = localStorage.getItem('companyFormData');
     if (savedData) {
         try {
             const parsedData = JSON.parse(savedData);
-            // Populate company fields
-            companyName.value = parsedData.company?.companyName || '';
-            selectedCountry.value = parsedData.company?.country || '';
-            selectedState.value = parsedData.company?.state || '';
-            selectedCity.value = parsedData.company?.city || '';
-            addressLine.value = parsedData.company?.addressLine || '';
-            zipCode.value = parsedData.company?.zipCode || '';
-            tradeLicense.value = parsedData.company?.tradeLicense || '';
-            officePhoneNumber.value = parsedData.company?.phoneNumber || '';
-            officeEmailAddress.value = parsedData.company?.emailAddress || '';
-            // Populate employee fields
+            if (!hasCompanyData.value) {
+                companyName.value = parsedData.company?.companyName || '';
+                selectedCountry.value = parsedData.company?.country || '';
+                selectedState.value = parsedData.company?.state || '';
+                selectedCity.value = parsedData.company?.city || '';
+                addressLine.value = parsedData.company?.addressLine || '';
+                zipCode.value = parsedData.company?.zipCode || '';
+                tradeLicense.value = parsedData.company?.tradeLicense || '';
+                officePhoneNumber.value = parsedData.company?.phoneNumber || '';
+                officeEmailAddress.value = parsedData.company?.emailAddress || '';
+            }
             employeeName.value = parsedData.employee?.employeeName || '';
             employeeDesignation.value = parsedData.employee?.employeeDesignation || '';
             employeeId.value = parsedData.employee?.employeeId || '';
@@ -469,17 +503,24 @@ onMounted(async () => {
             console.error('Error parsing saved form data:', e);
         }
     }
+
+    // Fetch license key and then default data
     await retrieveLicenseKey();
+    if (retrievedKey.value && retrievedKey.value !== 'Failed to retrieve license key') {
+        await getDefaultData();
+    } else {
+        console.error('No valid license key available to fetch default data');
+        showToast('error', 'Failed to load default data: Invalid license key', 5000, 'right-bottom');
+    }
 });
 
 const loading = ref(false);
 const router = useRouter();
 
-// FORM SUBMISSION HANDLER
+// Form submission handler
 const submitForm = async () => {
-    let hasErrors = false;
-
-    // RESET ERROR MESSAGES
+    // Reset error messages and hasErrors flag
+    hasErrors = false; // Reset hasErrors at the start
     companyNameError.value = '';
     countryError.value = '';
     stateError.value = '';
@@ -496,66 +537,68 @@ const submitForm = async () => {
     employeeEmailError.value = '';
     employeeLogoError.value = '';
 
-    // CHECK REQUIRED COMPANY FIELDS
-    if (!companyName.value) {
-        companyNameError.value = 'Company name is required';
-        hasErrors = true;
-    }
-    if (!selectedCountry.value) {
-        countryError.value = 'Country is required';
-        hasErrors = true;
-    }
-    if (!selectedState.value) {
-        stateError.value = 'State is required';
-        hasErrors = true;
-    }
-    if (!selectedCity.value) {
-        cityError.value = 'City is required';
-        hasErrors = true;
-    }
-    if (!addressLine.value) {
-        addressLineError.value = 'Address line is required';
-        hasErrors = true;
-    }
-    if (!zipCode.value) {
-        zipCodeError.value = 'ZIP code is required';
-        hasErrors = true;
-    }
-    if (!officePhoneNumber.value) {
-        officePhoneNumberError.value = 'Office phone number is required';
-        hasErrors = true;
-    } else if (!isValidPhone.value) {
-        officePhoneNumberError.value = 'Enter a valid phone number (e.g., +1-123-456-7890)';
-        hasErrors = true;
-    }
-    if (!officeEmailAddress.value) {
-        officeEmailAddressError.value = 'Office email address is required';
-        hasErrors = true;
-    } else if (!isValidEmail.value) {
-        officeEmailAddressError.value = 'Enter a valid email address';
-        hasErrors = true;
-    }
-    if (!tradeLicense.value) {
-        errorMessage.value = 'Trade license is required';
-        hasErrors = true;
-    } else if (errorMessage.value) {
-        hasErrors = true;
-    }
-    if (!companyLogoFile.value) {
-        companyLogoError.value = 'Company logo is required';
-        hasErrors = true;
+    // Check required company fields only if no company data exists
+    if (!hasCompanyData.value) {
+        if (!companyName.value.trim()) {
+            companyNameError.value = 'Company name is required';
+            hasErrors = true;
+        }
+        if (!selectedCountry.value) {
+            countryError.value = 'Country is required';
+            hasErrors = true;
+        }
+        if (!selectedState.value) {
+            stateError.value = 'State is required';
+            hasErrors = true;
+        }
+        if (!selectedCity.value) {
+            cityError.value = 'City is required';
+            hasErrors = true;
+        }
+        if (!addressLine.value.trim()) {
+            addressLineError.value = 'Address line is required';
+            hasErrors = true;
+        }
+        if (!zipCode.value.trim()) {
+            zipCodeError.value = 'ZIP code is required';
+            hasErrors = true;
+        }
+        if (!officePhoneNumber.value) {
+            officePhoneNumberError.value = 'Office phone number is required';
+            hasErrors = true;
+        } else if (!isValidPhone.value) {
+            officePhoneNumberError.value = 'Enter a valid phone number (e.g., +1-123-456-7890)';
+            hasErrors = true;
+        }
+        if (!officeEmailAddress.value.trim()) {
+            officeEmailAddressError.value = 'Office email address is required';
+            hasErrors = true;
+        } else if (!isValidEmail.value) {
+            officeEmailAddressError.value = 'Enter a valid email address';
+            hasErrors = true;
+        }
+        if (!tradeLicense.value.trim()) {
+            errorMessage.value = 'Trade license is required';
+            hasErrors = true;
+        } else if (errorMessage.value) {
+            hasErrors = true;
+        }
+        if (!companyLogoFile.value) {
+            companyLogoError.value = 'Company logo is required';
+            hasErrors = true; // Changed to true to enforce validation
+        }
     }
 
-    // CHECK REQUIRED EMPLOYEE FIELDS
-    if (!employeeName.value) {
+    // Check required employee fields
+    if (!employeeName.value.trim()) {
         employeeNameError.value = 'Employee name is required';
         hasErrors = true;
     }
-    if (!employeeDesignation.value) {
+    if (!employeeDesignation.value.trim()) {
         employeeDesignationError.value = 'Designation is required';
         hasErrors = true;
     }
-    if (!employeeId.value) {
+    if (!employeeId.value.trim()) {
         employeeIdError.value = 'Employee ID is required';
         hasErrors = true;
     }
@@ -566,7 +609,7 @@ const submitForm = async () => {
         employeePhoneError.value = 'Enter a valid phone number (e.g., +1-123-456-7890)';
         hasErrors = true;
     }
-    if (!employeeEmail.value) {
+    if (!employeeEmail.value.trim()) {
         employeeEmailError.value = 'Email address is required';
         hasErrors = true;
     } else if (!isEmployeeEmailValid.value) {
@@ -578,66 +621,61 @@ const submitForm = async () => {
         hasErrors = true;
     }
     if (!retrievedKey.value || retrievedKey.value === 'No valid license key found' || retrievedKey.value === 'Failed to retrieve license key') {
-        alert('A valid license key is required');
+        showToast('error', 'A valid license key is required', 5000, 'right-bottom');
         hasErrors = true;
     }
 
-    // STOP IF THERE ARE ERRORS
+    // If there are errors, show toast and stop execution
     if (hasErrors) {
-        showToast('error', "You have to fill all the fields", 5000, 'right-bottom');
-        return;
+        showToast('error', hasCompanyData.value ? 'Please fill all required employee fields' : 'Please fill all required fields', 5000, 'right-bottom');
+        return; // Stop execution if there are errors
     }
 
-    // FETCH SYSTEM INFO
+    // Fetch system info
     await fetchSystemInfo();
     await fetchSerialNumber();
 
-    // PREPARE FORM DATA
+    // Prepare form data
     const formData = new FormData();
-    formData.append('companyName', companyName.value);
-    formData.append('addressLine', addressLine.value);
-    formData.append('zipCode', zipCode.value);
-    formData.append('phoneNumber', officePhoneNumber.value);
-    formData.append('tradeLicense', tradeLicense.value);
-    formData.append('emailAddress', officeEmailAddress.value);
-    formData.append('license_key', retrievedKey.value);
-    formData.append('country', selectedCountry.value);
-    formData.append('state', selectedState.value);
-    formData.append('city', selectedCity.value);
-
-    // ADD COMPANY LOGO
-    if (companyLogoFile.value) {
-        formData.append('logo', companyLogoFile.value);
+    if (!hasCompanyData.value) {
+        formData.append('companyName', companyName.value);
+        formData.append('addressLine', addressLine.value);
+        formData.append('zipCode', zipCode.value);
+        formData.append('phoneNumber', officePhoneNumber.value);
+        formData.append('tradeLicense', tradeLicense.value);
+        formData.append('emailAddress', officeEmailAddress.value);
+        formData.append('country', selectedCountry.value);
+        formData.append('state', selectedState.value);
+        formData.append('city', selectedCity.value);
+        if (companyLogoFile.value) {
+            formData.append('logo', companyLogoFile.value);
+        }
     }
 
-    // PREPARE EMPLOYEE DATA
-    const employeeData = {
-        employeeName: employeeName.value,
-        employeeDesignation: employeeDesignation.value,
-        employeeId: employeeId.value,
-        employeePhone: employeePhone.value,
-        EmployeeEmail: employeeEmail.value,
-        serial_number: serialNumber.value,
-        host_name: systemInfo.value?.hostname || 'Unknown',
-        os: systemInfo.value?.platform || 'Unknown',
-        ram: systemInfo.value?.totalMemory
-            ? `${Math.round(systemInfo.value.totalMemory / (1024 * 1024 * 1024))}GB`
-            : 'Unknown',
-        cpu: systemInfo.value?.cpus?.[0]?.model || 'Unknown',
-        mac: systemInfo.value?.networkInterfaces?.[Object.keys(systemInfo.value.networkInterfaces)[0]]?.[0]?.mac || 'Unknown',
-        access: true
-    };
+    formData.append('license_key', retrievedKey.value);
+    formData.append('employeeName', employeeName.value);
+    formData.append('employeeDesignation', employeeDesignation.value);
+    formData.append('employeeId', employeeId.value);
+    formData.append('employeePhone', employeePhone.value);
+    formData.append('employeeEmail', employeeEmail.value);
+    formData.append('serial_number', serialNumber.value);
+    formData.append('host_name', systemInfo.value?.hostname || 'Unknown');
+    formData.append('os', systemInfo.value?.platform || 'Unknown');
+    formData.append('ram', systemInfo.value?.totalMemory
+        ? `${Math.round(systemInfo.value.totalMemory / (1024 * 1024 * 1024))}GB`
+        : 'Unknown');
+    formData.append('cpu', systemInfo.value?.cpus?.[0]?.model || 'Unknown');
+    formData.append('mac', systemInfo.value?.networkInterfaces?.[Object.keys(systemInfo.value.networkInterfaces)[0]]?.[0]?.mac || 'Unknown');
+    formData.append('access', 'true');
 
-    // ADD EMPLOYEE DATA AND PROFILE PICTURE
-    formData.append('employees', JSON.stringify([employeeData]));
     if (employeeLogoFile.value) {
         formData.append('photo', employeeLogoFile.value);
     }
 
-    // SAVE TO LOCALSTORAGE
+    // Save to localStorage
     try {
         const storageData = {
-            company: {
+            company: hasCompanyData.value ? {} : {
                 companyName: companyName.value,
                 country: selectedCountry.value,
                 state: selectedState.value,
@@ -661,44 +699,15 @@ const submitForm = async () => {
         console.error('Error saving to localStorage:', e);
     }
 
-    // SEND DATA TO API
     try {
         loading.value = true;
         const response = await axios.post('http://192.168.0.111:8000/api/org_info', formData);
-
         console.log('API response:', response.data);
-
         localStorage.removeItem('companyFormData');
-
         showToast('success', "Successfully completed all setup", 5000, 'right-bottom');
-
-        // Reset the form
-        // companyName.value = '';
-        // selectedCountry.value = '';
-        // selectedState.value = '';
-        // selectedCity.value = '';
-        // addressLine.value = '';
-        // zipCode.value = '';
-        // tradeLicense.value = '';
-        // officePhoneNumber.value = '';
-        // officeEmailAddress.value = '';
-        // companyLogoFile.value = null;
-        // employeeName.value = '';
-        // employeeDesignation.value = '';
-        // employeeId.value = '';
-        // employeePhone.value = '';
-        // employeeEmail.value = '';
-        // employeeLogoFile.value = null;
-        // systemInfo.value = null;
-        // serialNumber.value = 'Not fetched';
-        // retrievedKey.value = '';
-
-        // Only navigate on success
-        // router.push('/welcome');
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert('Failed to submit the form. Please try again later.');
-        showToast('success', "Something went wrong", 5000, 'right-bottom');
+        showToast('error', "Something went wrong", 5000, 'right-bottom');
     } finally {
         loading.value = false;
     }

@@ -107,6 +107,7 @@
                                         <strong class="success">License key</strong> to your email address
                                     </p>
                                 </div>
+
                                 <div class="w-100 f-center">
                                     <button type="submit" class="btn btn-alert" tabindex="13"
                                         aria-label="Submit trial registration">
@@ -162,16 +163,17 @@ const submitTrial = async () => {
     }
 
     try {
-        const response = await axios.post('http://192.168.0.111:8000/api/create_trial', {
+        await axios.post('http://192.168.0.111:8000/api/create_trial', {
             c_name: formData.companyName,
             address: formData.address,
             p_name: formData.personName,
             phone: formData.phone,
             email: formData.email,
         });
-        console.log('Trial submission successful:', response.data);
+        showToast('success', `Check your email inbox or spam. A temporary license key sent to your mail "${formData.email}"`, 15000)
         closeModal();
     } catch (error) {
+        showToast('error', "There is an Error. Please try again later. Or contact with ONUMAN support", 10000, 'right-bottom')
         console.error('Trial submission error:', error);
     }
 };
@@ -192,7 +194,6 @@ const activateLicense = async () => {
     const licenseKey = getLicenseKey().toLowerCase();
     if (licenseKey.length !== 16) {
         licenseError.value = 'License key must be 16 characters';
-        router.push('/PrivacyPolicy');
         return;
     }
     try {
@@ -200,21 +201,20 @@ const activateLicense = async () => {
         if (response.data.status === true) {
             licenseError.value = '';
             await window.electronAPI.storeLicenseKey(licenseKey);
-
+            router.push('/PrivacyPolicy');
+            showToast('info', `Congratulations! You have entered a valid license. Your subscription remains ${response.data.remain} days`, 10000, 'left-top')
         } else {
             licenseError.value = 'License Expired';
         }
     } catch (error) {
         console.error('License activation error:', error);
         licenseError.value = 'Failed to verify license';
-        router.push('/PrivacyPolicy');
     }
 };
 
 const isModalOpen = ref(false);
 const openModal = () => {
     isModalOpen.value = true;
-    showToast('success', "This is a toast message");
 };
 const closeModal = () => {
     isModalOpen.value = false;
