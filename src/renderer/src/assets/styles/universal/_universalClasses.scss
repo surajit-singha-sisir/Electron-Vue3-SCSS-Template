@@ -17,7 +17,7 @@ html {
 body {
   width: 100%;
   height: 100%;
-  font-family: 'Calibri', sans-serif;
+  font-family: 'Segoe UI', sans-serif;
 
   main.main {
     position: relative;
@@ -34,6 +34,10 @@ body {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+li {
+  list-style-type: none;
 }
 
 .onuman-icon {
@@ -84,6 +88,12 @@ a {
 hr {
   border: 1px solid $d-border;
 }
+.vr {
+  border: 1px solid color.adjust($d-border, $lightness: -3%);
+  width: 1px;
+  height: clamp(80%, 1rem, 50%);
+  border-radius: 2px;
+}
 
 // ALL INPUT CLASSES
 input[type='text'],
@@ -96,6 +106,7 @@ input[type='tel'],
 input[type='week'],
 input[type='month'],
 input[type='time'],
+input[type='search'],
 select,
 option {
   position: relative;
@@ -119,6 +130,7 @@ input[type='tel']:focus,
 input[type='week']:focus,
 input[type='month']:focus,
 input[type='time']:focus,
+input[type='search']:focus,
 select:focus,
 option:focus {
   box-shadow: $d-btn-1 0px 0px 0px 2px;
@@ -135,10 +147,21 @@ input[type='tel']::placeholder,
 input[type='week']::placeholder,
 input[type='month']::placeholder,
 input[type='time']::placeholder,
+input[type='search']::placeholder,
 select::placeholder,
 option::placeholder {
   font-size: 1rem;
   color: $d-sub-sub-text;
+}
+
+input[type='search']::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  width: 20px;
+  aspect-ratio: 1;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='gray' d='M14.348 5.652a1 1 0 00-1.414-1.414L10 7.172 7.066 4.238a1 1 0 00-1.414 1.414L8.828 8.586 5.652 11.762a1 1 0 101.414 1.414L10 10.828l3.066 3.066a1 1 0 001.414-1.414L11.172 8.586l3.176-3.176z'/></svg>")
+    no-repeat center center;
+  background-size: 100%;
+  cursor: pointer;
 }
 
 input[type='color'] {
@@ -149,6 +172,7 @@ input[type='color'] {
 input[type='date'],
 input[type='datetime'],
 input[type='datetime-local'],
+input[type='time'],
 input[type='time'] {
   min-width: 12rem;
 }

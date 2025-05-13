@@ -9,10 +9,20 @@
     "outDir": "./out",
     "composite": false,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".", // Add baseUrl for module resolution
+    "paths": {
+      "@/*": ["src/*"] // Add alias for @/ to src/
+    },
+    "types": ["node", "vue"], // Add vue types
+    "allowJs": true, // Optional: if you have JS files
+    "noEmit": true, // Recommended for Vue projects (no JS output, handled by Vite/Webpack)
+    "lib": ["esnext", "dom"] // Add DOM APIs for browser context
   },
   "include": [
     "electron/**/*",
-    "src/**/*"
-  ]
+    "src/**/*",
+    "src/**/*.vue" // Explicitly include .vue files
+  ],
+  "exclude": ["node_modules"] // Exclude node_modules for performance
 }

@@ -13,8 +13,8 @@
                 aria-label="Terms of Service Content" tabindex="0">
                 <div class="tos-content">
                     <header class="f-center f-col gap-05 m-b-20">
-                        <h1 class="text-xl font-bold" id="tos-heading">Onuman Software - Terms of Service</h1>
-                        <p class="text-sm text-muted" aria-label="Last updated date">Last Updated: April 20, 2025</p>
+                        <h1 class="text-xl" id="tos-heading">Onuman Software - Terms of Service</h1>
+                        <p class="text-sm" aria-label="Last updated date">Last Updated: April 20, 2025</p>
                     </header>
 
                     <article class="f f-col gap-15">

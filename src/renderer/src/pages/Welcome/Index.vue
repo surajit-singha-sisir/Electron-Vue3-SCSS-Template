@@ -19,6 +19,6 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 setTimeout(() => {
-    router.push('/license')
+    router.push('/dashboard')
 }, 5000);
 </script>

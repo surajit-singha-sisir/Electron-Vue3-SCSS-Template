@@ -1,7 +1,6 @@
 // preload/index.ts
 import { contextBridge, ipcRenderer } from 'electron'
 import type { SystemInfo } from '../renderer/src/composables/SystemInfo'
-
 contextBridge.exposeInMainWorld('electronAPI', {
   closeWindow: () => ipcRenderer.invoke('window:close') as Promise<void>,
   minimizeWindow: () => ipcRenderer.invoke('window:minimize') as Promise<void>,

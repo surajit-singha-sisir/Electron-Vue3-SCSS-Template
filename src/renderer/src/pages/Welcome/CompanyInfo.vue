@@ -174,7 +174,7 @@
                     <h3>Employee Information</h3>
                     <hr>
 
-                    <!-- Your Name -->
+                    <!-- YOUR NAME -->
                     <div class="onuman-input-box">
                         <label for="employee-name-input" id="employee-name-label">Your Name</label>
                         <input type="text" id="employee-name-input" name="employeeName" class="onuman-input2"
@@ -182,10 +182,10 @@
                             aria-labelledby="employee-name-label" aria-describedby="employee-name-error"
                             maxlength="200">
                         <span v-if="employeeNameError" class="red" id="employee-name-error">{{ employeeNameError
-                        }}</span>
+                            }}</span>
                     </div>
 
-                    <!-- Your Designation -->
+                    <!-- YOUR DESIGNATION -->
                     <div class="onuman-input-box">
                         <label for="employee-designation-input" id="employee-designation-label">Your Designation</label>
                         <input type="text" id="employee-designation-input" name="employeeDesignation"
@@ -196,7 +196,7 @@
                             employeeDesignationError }}</span>
                     </div>
 
-                    <!-- Employee ID -->
+                    <!-- EMPLOYEE ID -->
                     <div class="onuman-input-box">
                         <label for="employee-id-input" id="employee-id-label">Employee ID</label>
                         <input type="text" id="employee-id-input" name="employeeId" class="onuman-input2"
@@ -205,7 +205,7 @@
                         <span v-if="employeeIdError" class="red" id="employee-id-error">{{ employeeIdError }}</span>
                     </div>
 
-                    <!-- Your Phone No. -->
+                    <!-- YOUR PHONE NO. -->
                     <div class="onuman-input-box">
                         <label for="employee-phone-input" id="employee-phone-label">Your Phone No.</label>
                         <input type="tel" id="employee-phone-input" name="employeePhone" class="onuman-input2"
@@ -219,7 +219,7 @@
                         <span v-if="employeePhoneError" class="red">{{ employeePhoneError }}</span>
                     </div>
 
-                    <!-- Your Email Address -->
+                    <!-- YOUR EMAIL ADDRESS -->
                     <div class="onuman-input-box">
                         <label for="employee-email-input" id="employee-email-label">Your Email Address</label>
                         <input type="email" id="employee-email-input" name="employeeEmail" class="onuman-input2"
@@ -267,10 +267,7 @@ import type { SystemInfo } from '../../composables/SystemInfo';
 import axios from 'axios';
 import { useToast } from '../../composables/Toast';
 
-const { showToast } = useToast();
-let hasErrors = false;
-
-// Define interfaces for JSON structure
+// INTERFACES
 interface City {
     name: string;
 }
@@ -282,8 +279,6 @@ interface Country {
     name: string;
     states: State[];
 }
-
-// Define interface for API response
 interface Company {
     id: number;
     companyName: string;
@@ -299,58 +294,27 @@ interface Company {
     created_at: string;
     license_key: number;
 }
-
 interface OrgData {
     companies: Company[];
 }
 
-// Type the imported JSON data
+// COMPOSABLES
+const { showToast } = useToast();
+const { usePhoneValidator, useEmailValidator, useTradeLicenseValidator } = useValidators();
+const router = useRouter();
+
+// STATE - FORM STATUS
+const loading = ref(false);
+const hasErrors = ref(false);
+
+// STATE - LOCATION DATA
 const locations = ref<Country[]>(locationData as Country[]);
 const error = ref<string | null>(null);
-
-// Reactive state for selections
 const selectedCountry = ref<string>('');
 const selectedState = ref<string>('');
 const selectedCity = ref<string>('');
 
-// Compute country options
-const countryOptions = computed(() =>
-    locations.value.map((country) => country.name).sort()
-);
-
-// Compute state options based on selected country
-const stateOptions = computed(() => {
-    const country = locations.value.find((c) => c.name === selectedCountry.value);
-    return country ? country.states.map((state) => state.name).sort() : [];
-});
-
-// Compute city options based on selected state
-const cityOptions = computed(() => {
-    const country = locations.value.find((c) => c.name === selectedCountry.value);
-    const state = country?.states.find((s) => s.name === selectedState.value);
-    return state ? state.cities.map((city) => city.name).sort() : [];
-});
-
-// Watch country selection to reset state and city
-watch(selectedCountry, () => {
-    selectedState.value = '';
-    selectedCity.value = '';
-});
-
-// Watch state selection to reset city
-watch(selectedState, () => {
-    selectedCity.value = '';
-});
-
-// Handle JSON loading error
-if (!locationData || !Array.isArray(locationData)) {
-    error.value = 'FAILED TO LOAD OR PARSE COUNTRY-STATE-CITY.JSON';
-}
-
-// Use validators
-const { usePhoneValidator, useEmailValidator, useTradeLicenseValidator } = useValidators();
-
-// Company fields
+// STATE - COMPANY FIELDS
 const companyName = ref<string>('');
 const companyNameError = ref<string>('');
 const countryError = ref<string>('');
@@ -363,122 +327,70 @@ const zipCodeError = ref<string>('');
 const companyLogoFile = ref<File | null>(null);
 const companyLogoError = ref<string>('');
 const officePhoneNumber = ref<string>('');
+const officePhoneNumberError = ref<string>('');
 const officeEmailAddress = ref<string>('');
+const officeEmailAddressError = ref<string>('');
 const tradeLicense = ref<string>('');
+const hasCompanyData = ref<boolean>(false);
 
-// Employee fields
+// STATE - EMPLOYEE FIELDS
 const employeeName = ref<string>('');
-const employeeDesignation = ref<string>('');
-const employeeId = ref<string>('');
-const employeePhone = ref<string>('');
-const employeeEmail = ref<string>('');
-const employeeLogoFile = ref<File | null>(null);
 const employeeNameError = ref<string>('');
+const employeeDesignation = ref<string>('');
 const employeeDesignationError = ref<string>('');
+const employeeId = ref<string>('');
 const employeeIdError = ref<string>('');
+const employeePhone = ref<string>('');
 const employeePhoneError = ref<string>('');
+const employeeEmail = ref<string>('');
 const employeeEmailError = ref<string>('');
+const employeeLogoFile = ref<File | null>(null);
 const employeeLogoError = ref<string>('');
 
-// Validation
+// STATE - SYSTEM INFO
+const systemInfo = ref<SystemInfo | null>(null);
+const serialNumber = ref<string>('Not fetched');
+
+// STATE - API DATA
+const getOrgData = ref<OrgData>({ companies: [] });
+const retrievedKey = ref<string>('');
+
+// VALIDATION
 const { isValidPhone, formatPhoneNumber } = usePhoneValidator(officePhoneNumber);
 const { isValidEmail } = useEmailValidator(officeEmailAddress);
 const { errorMessage } = useTradeLicenseValidator(tradeLicense);
 const { isValidPhone: isEmployeePhoneValid, formatPhoneNumber: formatEmployeePhoneNumber } = usePhoneValidator(employeePhone);
 const { isValidEmail: isEmployeeEmailValid } = useEmailValidator(employeeEmail);
-const officePhoneNumberError = ref<string>('');
-const officeEmailAddressError = ref<string>('');
 
-// System info
-const systemInfo = ref<SystemInfo | null>(null);
-const serialNumber = ref<string>('Not fetched');
+// COMPUTED - LOCATION OPTIONS
+const countryOptions = computed(() => locations.value.map((country) => country.name).sort());
+const stateOptions = computed(() => {
+    const country = locations.value.find((c) => c.name === selectedCountry.value);
+    return country ? country.states.map((state) => state.name).sort() : [];
+});
+const cityOptions = computed(() => {
+    const country = locations.value.find((c) => c.name === selectedCountry.value);
+    const state = country?.states.find((s) => s.name === selectedState.value);
+    return state ? state.cities.map((city) => city.name).sort() : [];
+});
 
-// API data
-const getOrgData = ref<OrgData>({ companies: [] });
-const retrievedKey = ref<string>('');
-const hasCompanyData = ref<boolean>(false);
+// WATCHERS
+watch(selectedCountry, () => {
+    selectedState.value = '';
+    selectedCity.value = '';
+});
+watch(selectedState, () => {
+    selectedCity.value = '';
+});
 
-// File handling
-const handleCompanyLogo = (event: Event) => {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-        companyLogoFile.value = input.files[0];
-        companyLogoError.value = '';
-    } else {
-        companyLogoFile.value = null;
+// INITIALIZATION FUNCTIONS
+const validateLocationData = () => {
+    if (!locationData || !Array.isArray(locationData)) {
+        error.value = 'FAILED TO LOAD OR PARSE COUNTRY-STATE-CITY.JSON';
     }
 };
 
-const handleEmployeeLogo = (event: Event) => {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-        employeeLogoFile.value = input.files[0];
-        employeeLogoError.value = '';
-    } else {
-        employeeLogoFile.value = null;
-    }
-};
-
-// Fetch system info
-const fetchSystemInfo = async () => {
-    try {
-        const info = await window.electronAPI.getSystemInfo();
-        systemInfo.value = info;
-    } catch (error) {
-        console.error('Failed to fetch system info:', error);
-    }
-};
-
-const fetchSerialNumber = async () => {
-    try {
-        serialNumber.value = await window.electronAPI.getMotherboardSerial();
-    } catch (error) {
-        console.error('Error fetching motherboard serial:', error);
-        serialNumber.value = 'Failed to fetch';
-    }
-};
-
-// Retrieve license key
-const retrieveLicenseKey = async () => {
-    try {
-        const storedKey = await window.electronAPI.getLicenseKey();
-        retrievedKey.value = storedKey;
-    } catch (error) {
-        console.error('Failed to retrieve license key:', error);
-        retrievedKey.value = 'Failed to retrieve license key';
-        showToast('error', "You haven't any license key");
-    }
-};
-
-// Fetch default data
-const getDefaultData = async () => {
-    try {
-        const response = await axios.get(`http://192.168.0.111:8000/api/get_org/${retrievedKey.value}`);
-        getOrgData.value = { companies: response.data };
-        hasErrors = false;
-
-        if (getOrgData.value.companies.length > 0) {
-            hasCompanyData.value = true;
-            const company = getOrgData.value.companies[0];
-            companyName.value = company.companyName || '';
-            selectedCountry.value = company.country || '';
-            selectedState.value = company.state || '';
-            selectedCity.value = company.city || '';
-            addressLine.value = company.addressLine || '';
-            zipCode.value = company.zipCode || '';
-            tradeLicense.value = company.tradeLicense || '';
-            officePhoneNumber.value = company.phoneNumber || '';
-            officeEmailAddress.value = company.emailAddress || '';
-        }
-    } catch (error) {
-        console.error('Failed to fetch default data:', error);
-        showToast('error', 'Failed to load default organization data', 5000, 'right-bottom');
-    }
-};
-
-// Load saved data and license key on mount
-onMounted(async () => {
-    // Load saved form data from localStorage
+const loadSavedFormData = () => {
     const savedData = localStorage.getItem('companyFormData');
     if (savedData) {
         try {
@@ -500,27 +412,81 @@ onMounted(async () => {
             employeePhone.value = parsedData.employee?.employeePhone || '';
             employeeEmail.value = parsedData.employee?.employeeEmail || '';
         } catch (e) {
-            console.error('Error parsing saved form data:', e);
+            showToast('error', 'ERROR PARSING SAVED FORM DATA:');
         }
     }
+};
 
-    // Fetch license key and then default data
-    await retrieveLicenseKey();
-    if (retrievedKey.value && retrievedKey.value !== 'Failed to retrieve license key') {
-        await getDefaultData();
-    } else {
-        console.error('No valid license key available to fetch default data');
-        showToast('error', 'Failed to load default data: Invalid license key', 5000, 'right-bottom');
+// SYSTEM INFO FUNCTIONS
+const fetchSystemInfo = async () => {
+    try {
+        systemInfo.value = await window.electronAPI.getSystemInfo();
+    } catch (error) {
+        console.error('FAILED TO FETCH SYSTEM INFO:', error);
     }
-});
+};
 
-const loading = ref(false);
-const router = useRouter();
+const fetchSerialNumber = async () => {
+    try {
+        serialNumber.value = await window.electronAPI.getMotherboardSerial();
+    } catch (error) {
+        console.error('ERROR FETCHING MOTHERBOARD SERIAL:', error);
+        serialNumber.value = 'FAILED TO FETCH';
+    }
+};
 
-// Form submission handler
-const submitForm = async () => {
-    // Reset error messages and hasErrors flag
-    hasErrors = false; // Reset hasErrors at the start
+// API FUNCTIONS
+const retrieveLicenseKey = async () => {
+    try {
+        retrievedKey.value = await window.electronAPI.getLicenseKey();
+    } catch (error) {
+        console.error('FAILED TO RETRIEVE LICENSE KEY:', error);
+        retrievedKey.value = 'FAILED TO RETRIEVE LICENSE KEY';
+        showToast('error', "YOU HAVEN'T ANY LICENSE KEY");
+    }
+};
+
+const getDefaultData = async () => {
+    try {
+        const response = await axios.get(`http://192.168.0.111:8000/api/get_org/${retrievedKey.value}`);
+        getOrgData.value = { companies: response.data };
+        hasErrors.value = false;
+
+        if (getOrgData.value.companies.length > 0) {
+            hasCompanyData.value = true;
+            const company = getOrgData.value.companies[0];
+            companyName.value = company.companyName || '';
+            selectedCountry.value = company.country || '';
+            selectedState.value = company.state || '';
+            selectedCity.value = company.city || '';
+            addressLine.value = company.addressLine || '';
+            zipCode.value = company.zipCode || '';
+            tradeLicense.value = company.tradeLicense || '';
+            officePhoneNumber.value = company.phoneNumber || '';
+            officeEmailAddress.value = company.emailAddress || '';
+        }
+    } catch (error) {
+        console.error('FAILED TO FETCH DEFAULT DATA:', error);
+        showToast('error', 'FAILED TO LOAD DEFAULT ORGANIZATION DATA', 5000, 'right-bottom');
+    }
+};
+
+// FILE HANDLING FUNCTIONS
+const handleCompanyLogo = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    companyLogoFile.value = input.files && input.files.length > 0 ? input.files[0] : null;
+    companyLogoError.value = '';
+};
+
+const handleEmployeeLogo = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    employeeLogoFile.value = input.files && input.files.length > 0 ? input.files[0] : null;
+    employeeLogoError.value = '';
+};
+
+// VALIDATION FUNCTIONS
+const resetErrors = () => {
+    hasErrors.value = false;
     companyNameError.value = '';
     countryError.value = '';
     stateError.value = '';
@@ -536,143 +502,103 @@ const submitForm = async () => {
     employeePhoneError.value = '';
     employeeEmailError.value = '';
     employeeLogoError.value = '';
+};
 
-    // Check required company fields only if no company data exists
-    if (!hasCompanyData.value) {
-        if (!companyName.value.trim()) {
-            companyNameError.value = 'Company name is required';
-            hasErrors = true;
-        }
-        if (!selectedCountry.value) {
-            countryError.value = 'Country is required';
-            hasErrors = true;
-        }
-        if (!selectedState.value) {
-            stateError.value = 'State is required';
-            hasErrors = true;
-        }
-        if (!selectedCity.value) {
-            cityError.value = 'City is required';
-            hasErrors = true;
-        }
-        if (!addressLine.value.trim()) {
-            addressLineError.value = 'Address line is required';
-            hasErrors = true;
-        }
-        if (!zipCode.value.trim()) {
-            zipCodeError.value = 'ZIP code is required';
-            hasErrors = true;
-        }
-        if (!officePhoneNumber.value) {
-            officePhoneNumberError.value = 'Office phone number is required';
-            hasErrors = true;
-        } else if (!isValidPhone.value) {
-            officePhoneNumberError.value = 'Enter a valid phone number (e.g., +1-123-456-7890)';
-            hasErrors = true;
-        }
-        if (!officeEmailAddress.value.trim()) {
-            officeEmailAddressError.value = 'Office email address is required';
-            hasErrors = true;
-        } else if (!isValidEmail.value) {
-            officeEmailAddressError.value = 'Enter a valid email address';
-            hasErrors = true;
-        }
-        if (!tradeLicense.value.trim()) {
-            errorMessage.value = 'Trade license is required';
-            hasErrors = true;
-        } else if (errorMessage.value) {
-            hasErrors = true;
-        }
-        if (!companyLogoFile.value) {
-            companyLogoError.value = 'Company logo is required';
-            hasErrors = true; // Changed to true to enforce validation
-        }
+const validateCompanyFields = () => {
+    if (hasCompanyData.value) return;
+
+    if (!companyName.value.trim()) {
+        companyNameError.value = 'COMPANY NAME IS REQUIRED';
+        hasErrors.value = true;
     }
+    if (!selectedCountry.value) {
+        countryError.value = 'COUNTRY IS REQUIRED';
+        hasErrors.value = true;
+    }
+    if (!selectedState.value) {
+        stateError.value = 'STATE IS REQUIRED';
+        hasErrors.value = true;
+    }
+    if (!selectedCity.value) {
+        cityError.value = 'CITY IS REQUIRED';
+        hasErrors.value = true;
+    }
+    if (!addressLine.value.trim()) {
+        addressLineError.value = 'ADDRESS LINE IS REQUIRED';
+        hasErrors.value = true;
+    }
+    if (!zipCode.value.trim()) {
+        zipCodeError.value = 'ZIP CODE IS REQUIRED';
+        hasErrors.value = true;
+    }
+    if (!officePhoneNumber.value) {
+        officePhoneNumberError.value = 'OFFICE PHONE NUMBER IS REQUIRED';
+        hasErrors.value = true;
+    } else if (!isValidPhone.value) {
+        officePhoneNumberError.value = 'ENTER A VALID PHONE NUMBER (E.G., +1-123-456-7890)';
+        hasErrors.value = true;
+    }
+    if (!officeEmailAddress.value.trim()) {
+        officeEmailAddressError.value = 'OFFICE EMAIL ADDRESS IS REQUIRED';
+        hasErrors.value = true;
+    } else if (!isValidEmail.value) {
+        officeEmailAddressError.value = 'ENTER A VALID EMAIL ADDRESS';
+        hasErrors.value = true;
+    }
+    if (!tradeLicense.value.trim()) {
+        errorMessage.value = 'TRADE LICENSE IS REQUIRED';
+        hasErrors.value = true;
+    } else if (errorMessage.value) {
+        hasErrors.value = true;
+    }
+    if (!companyLogoFile.value) {
+        companyLogoError.value = 'COMPANY LOGO IS REQUIRED';
+        hasErrors.value = true;
+    }
+};
 
-    // Check required employee fields
+const validateEmployeeFields = () => {
     if (!employeeName.value.trim()) {
-        employeeNameError.value = 'Employee name is required';
-        hasErrors = true;
+        employeeNameError.value = 'EMPLOYEE NAME IS REQUIRED';
+        hasErrors.value = true;
     }
     if (!employeeDesignation.value.trim()) {
-        employeeDesignationError.value = 'Designation is required';
-        hasErrors = true;
+        employeeDesignationError.value = 'DESIGNATION IS REQUIRED';
+        hasErrors.value = true;
     }
     if (!employeeId.value.trim()) {
-        employeeIdError.value = 'Employee ID is required';
-        hasErrors = true;
+        employeeIdError.value = 'EMPLOYEE ID IS REQUIRED';
+        hasErrors.value = true;
     }
     if (!employeePhone.value) {
-        employeePhoneError.value = 'Phone number is required';
-        hasErrors = true;
+        employeePhoneError.value = 'PHONE NUMBER IS REQUIRED';
+        hasErrors.value = true;
     } else if (!isEmployeePhoneValid.value) {
-        employeePhoneError.value = 'Enter a valid phone number (e.g., +1-123-456-7890)';
-        hasErrors = true;
+        employeePhoneError.value = 'ENTER A VALID PHONE NUMBER (E.G., +1-123-456-7890)';
+        hasErrors.value = true;
     }
     if (!employeeEmail.value.trim()) {
-        employeeEmailError.value = 'Email address is required';
-        hasErrors = true;
+        employeeEmailError.value = 'EMAIL ADDRESS IS REQUIRED';
+        hasErrors.value = true;
     } else if (!isEmployeeEmailValid.value) {
-        employeeEmailError.value = 'Enter a valid email address';
-        hasErrors = true;
+        employeeEmailError.value = 'ENTER A VALID EMAIL ADDRESS';
+        hasErrors.value = true;
     }
     if (!employeeLogoFile.value) {
-        employeeLogoError.value = 'Profile picture is required';
-        hasErrors = true;
+        employeeLogoError.value = 'PROFILE PICTURE IS REQUIRED';
+        hasErrors.value = true;
     }
-    if (!retrievedKey.value || retrievedKey.value === 'No valid license key found' || retrievedKey.value === 'Failed to retrieve license key') {
-        showToast('error', 'A valid license key is required', 5000, 'right-bottom');
-        hasErrors = true;
+};
+
+const validateLicenseKey = () => {
+    if (!retrievedKey.value || retrievedKey.value === 'NO VALID LICENSE KEY FOUND' || retrievedKey.value === 'FAILED TO RETRIEVE LICENSE KEY') {
+        showToast('error', 'A VALID LICENSE KEY IS REQUIRED', 5000, 'right-bottom');
+        hasErrors.value = true;
     }
+};
 
-    // If there are errors, show toast and stop execution
-    if (hasErrors) {
-        showToast('error', hasCompanyData.value ? 'Please fill all required employee fields' : 'Please fill all required fields', 5000, 'right-bottom');
-        return; // Stop execution if there are errors
-    }
-
-    // Fetch system info
-    await fetchSystemInfo();
-    await fetchSerialNumber();
-
-    // Prepare form data
-    const formData = new FormData();
-    if (!hasCompanyData.value) {
-        formData.append('companyName', companyName.value);
-        formData.append('addressLine', addressLine.value);
-        formData.append('zipCode', zipCode.value);
-        formData.append('phoneNumber', officePhoneNumber.value);
-        formData.append('tradeLicense', tradeLicense.value);
-        formData.append('emailAddress', officeEmailAddress.value);
-        formData.append('country', selectedCountry.value);
-        formData.append('state', selectedState.value);
-        formData.append('city', selectedCity.value);
-        if (companyLogoFile.value) {
-            formData.append('logo', companyLogoFile.value);
-        }
-    }
-
-    formData.append('license_key', retrievedKey.value);
-    formData.append('employeeName', employeeName.value);
-    formData.append('employeeDesignation', employeeDesignation.value);
-    formData.append('employeeId', employeeId.value);
-    formData.append('employeePhone', employeePhone.value);
-    formData.append('employeeEmail', employeeEmail.value);
-    formData.append('serial_number', serialNumber.value);
-    formData.append('host_name', systemInfo.value?.hostname || 'Unknown');
-    formData.append('os', systemInfo.value?.platform || 'Unknown');
-    formData.append('ram', systemInfo.value?.totalMemory
-        ? `${Math.round(systemInfo.value.totalMemory / (1024 * 1024 * 1024))}GB`
-        : 'Unknown');
-    formData.append('cpu', systemInfo.value?.cpus?.[0]?.model || 'Unknown');
-    formData.append('mac', systemInfo.value?.networkInterfaces?.[Object.keys(systemInfo.value.networkInterfaces)[0]]?.[0]?.mac || 'Unknown');
-    formData.append('access', 'true');
-
-    if (employeeLogoFile.value) {
-        formData.append('photo', employeeLogoFile.value);
-    }
-
-    // Save to localStorage
+// FORM SUBMISSION FUNCTIONS
+const saveToLocalStorage = () => {
     try {
         const storageData = {
             company: hasCompanyData.value ? {} : {
@@ -696,20 +622,90 @@ const submitForm = async () => {
         };
         localStorage.setItem('companyFormData', JSON.stringify(storageData));
     } catch (e) {
-        console.error('Error saving to localStorage:', e);
+        console.error('ERROR SAVING TO LOCALSTORAGE:', e);
     }
+};
+
+const prepareFormData = () => {
+    const formData = new FormData();
+    if (!hasCompanyData.value) {
+        formData.append('companyName', companyName.value);
+        formData.append('addressLine', addressLine.value);
+        formData.append('zipCode', zipCode.value);
+        formData.append('phoneNumber', officePhoneNumber.value);
+        formData.append('tradeLicense', tradeLicense.value);
+        formData.append('emailAddress', officeEmailAddress.value);
+        formData.append('country', selectedCountry.value);
+        formData.append('state', selectedState.value);
+        formData.append('city', selectedCity.value);
+        if (companyLogoFile.value) {
+            formData.append('logo', companyLogoFile.value);
+        }
+    }
+
+    formData.append('license_key', retrievedKey.value);
+    formData.append('employeeName', employeeName.value);
+    formData.append('employeeDesignation', employeeDesignation.value);
+    formData.append('employeeId', employeeId.value);
+    formData.append('employeePhone', employeePhone.value);
+    formData.append('employeeEmail', employeeEmail.value);
+    formData.append('serial_number', serialNumber.value);
+    formData.append('host_name', systemInfo.value?.hostname || 'UNKNOWN');
+    formData.append('os', systemInfo.value?.platform || 'UNKNOWN');
+    formData.append('ram', systemInfo.value?.totalMemory
+        ? `${Math.round(systemInfo.value.totalMemory / (1024 * 1024 * 1024))}GB`
+        : 'UNKNOWN');
+    formData.append('cpu', systemInfo.value?.cpus?.[0]?.model || 'UNKNOWN');
+    formData.append('mac', systemInfo.value?.networkInterfaces?.[Object.keys(systemInfo.value.networkInterfaces)[0]]?.[0]?.mac || 'UNKNOWN');
+    formData.append('access', 'true');
+
+    if (employeeLogoFile.value) {
+        formData.append('photo', employeeLogoFile.value);
+    }
+
+    return formData;
+};
+
+const submitForm = async () => {
+    resetErrors();
+    validateCompanyFields();
+    validateEmployeeFields();
+    validateLicenseKey();
+
+    if (hasErrors.value) {
+        showToast('error', hasCompanyData.value ? 'PLEASE FILL ALL REQUIRED EMPLOYEE FIELDS' : 'PLEASE FILL ALL REQUIRED FIELDS', 5000, 'right-bottom');
+        return;
+    }
+
+    await fetchSystemInfo();
+    await fetchSerialNumber();
+    saveToLocalStorage();
 
     try {
         loading.value = true;
+        const formData = prepareFormData();
         const response = await axios.post('http://192.168.0.111:8000/api/org_info', formData);
-        console.log('API response:', response.data);
+        console.log('API RESPONSE:', response.data);
         localStorage.removeItem('companyFormData');
-        showToast('success', "Successfully completed all setup", 5000, 'right-bottom');
+        showToast('success', 'SUCCESSFULLY COMPLETED ALL SETUP', 10000, 'right-bottom');
     } catch (error) {
-        console.error('Error submitting form:', error);
-        showToast('error', "Something went wrong", 5000, 'right-bottom');
+        console.error('ERROR SUBMITTING FORM:', error);
+        showToast('error', 'SOMETHING WENT WRONG', 5000, 'right-bottom');
     } finally {
         loading.value = false;
     }
 };
+
+// LIFECYCLE
+onMounted(async () => {
+    validateLocationData();
+    loadSavedFormData();
+    await retrieveLicenseKey();
+    if (retrievedKey.value && retrievedKey.value !== 'FAILED TO RETRIEVE LICENSE KEY') {
+        await getDefaultData();
+    } else {
+        console.error('NO VALID LICENSE KEY AVAILABLE TO FETCH DEFAULT DATA');
+        showToast('error', 'FAILED TO LOAD DEFAULT DATA: INVALID LICENSE KEY', 5000, 'right-bottom');
+    }
+});
 </script>

@@ -43,10 +43,16 @@ const maximizeWindow = async () => {
 <style scoped>
 .window-controls {
     display: flex;
-    width: 100%;
+    width: 40%;
     justify-content: flex-end;
     gap: 6px;
     -webkit-app-region: drag;
+}
+
+@media (min-width: 1920px) {
+    .window-controls {
+        width: 70%;
+    }
 }
 
 .window-controls button {
