@@ -81,11 +81,17 @@
     .sub-input {
       position: relative;
       width: 100%;
+
+      &.sub-input-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        text-wrap: nowrap;
+      }
       & input {
-        width: 100% !important;
+        width: 100%;
         margin-top: 0.3rem !important;
         padding: 0.4rem;
-
       }
     }
   }
