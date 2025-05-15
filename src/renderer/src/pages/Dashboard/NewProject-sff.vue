@@ -1,9 +1,8 @@
 <template>
     <DefaultLayouts class="d-block relative">
         <section class="f-center h-100 w-100"><br><br>
-            <br><br>
-            <form method="post" @submit.prevent="submitAddProject" class="main-screen w-95 h-100 onuman-scrollbar"
-                ref="mainForm">
+        <br><br>
+            <form method="post" @submit.prevent="submitAddProject" class="main-screen w-95 h-100 onuman-scrollbar">
                 <div class="g-res-3-col-container gap-10">
                     <aside>
                         <!-- PROJECT NAME -->
@@ -97,7 +96,11 @@
                         <!-- SET MIX RATIO -->
                         <div class="f-center gap-10 bordered-all relative">
                             <!-- POPUP FORM -->
-                            <section class="setMixRatioPopup" :class="{ show: setMixRatioPopup }">
+                            <form class="setMixRatioPopup" :class="{ show: setMixRatioPopup }"
+                                @submit.prevent="setMixRatioForm" method="post" autocomplete="off">
+                                <div class="w-100 f-end-center" style="padding: 0.2rem 0;" @click="setMixRatioOut"><i
+                                        class="m-cross1 bordered-circle w-10"></i>
+                                </div>
                                 <table class='short-table'>
                                     <thead>
                                         <tr>
@@ -160,9 +163,8 @@
                                     <textarea name="comment" class="m-tb-05 onuman-input3" v-model="formData.comment"
                                         placeholder="Optional comment"></textarea>
                                 </div>
-                                <button type="button" class="button project-btn m-b-05"
-                                    @click="setMixRatioOut">Submit</button>
-                            </section>
+                                <button type="button" class="button project-btn m-b-05">Submit</button>
+                            </form>
 
                             <Tooltip content="Edit Mix Ratio" position="top" id="country-tooltip">
                                 <button type="button" class="button project-btn" @click="setMixRatio">Set Mix
@@ -220,9 +222,9 @@
                         <div class="project-image">
                             <label for="projectImage">Set Project Image</label>
                             <input type="file" name="projectImage" id="projectImage" class="onuman-input2"
-                                accept="image/*" @change="handleFileChange" />
-                            <div class="project-image-preview" v-if="imageUrl">
-                                <img :src="imageUrl" alt="Project image preview" name="image" />
+                                accept="image/*" @change="handleImageChange" />
+                            <div class="project-image-preview" v-if="imageFileAvailable">
+                                <img :src="imagePreviewUrl" alt="Project image preview" />
                             </div>
                         </div><br>
                         <div class="onuman-start-with">
@@ -257,46 +259,12 @@ import { useRouter } from 'vue-router';
 import DefaultLayouts from '../../layouts/DefaultLayouts.vue';
 import DatePicker from '../../components/UI/DatePicker.vue';
 import { useValidators } from '../../composables/useValidators';
-import { useImageUploader } from '../../composables/useImageUploader'
 import OnumanCombobox from '../../components/OnumanCombobox.vue';
 import Tooltip from '../../components/ToolTip.vue';
 import axios from 'axios';
 import { useNetworkStatus } from '../../composables/useNetworkStatus';
 import { useToast } from '../../composables/Toast';
 
-// IMAGE UPLOAD
-
-const { uploadImage } = useImageUploader()
-const imageUrl = ref<string | null>(null)
-
-const handleFileChange = async (event: Event) => {
-    console.log('handleFileChange triggered')
-    const target = event.target as HTMLInputElement
-    const file = target.files?.[0]
-    if (!file) return
-
-    // Optionally: show a local preview while uploading
-    imageUrl.value = URL.createObjectURL(file)
-
-    // Upload image and get server URL
-    try {
-        const uploadedUrl = await uploadImage(file)
-        if (uploadedUrl) {
-            imageUrl.value = 'http://192.168.0.111:8000' + uploadedUrl
-            console.log('Image URL set to:', imageUrl.value)
-        }
-
-    } catch (error) {
-        console.error('Image upload failed:', error)
-    }
-}
-
-watch(imageUrl, (val) => {
-    console.log('imageUrl changed:', val)
-})
-
-
-// LICENSE KEY
 const retrievedKey = ref<string>('');
 const retrieveLicenseKey = async () => {
     try {
@@ -384,6 +352,66 @@ const errors = reactive({
     mixRatioStone: '',
 });
 
+const setMixRatioForm = async () => {
+    // Reset errors
+    errors.mixRatioCement = '';
+    errors.mixRatioBrick = '';
+    errors.mixRatioSand = '';
+    errors.mixRatioStone = '';
+
+    // Validate required fields
+    let isValid = true;
+    if (!formData.mixRatioCement || formData.mixRatioCement < 0) {
+        errors.mixRatioCement = 'Cement ratio is required and must be non-negative.';
+        isValid = false;
+    }
+    if (!formData.mixRatioBrick || formData.mixRatioBrick < 0) {
+        errors.mixRatioBrick = 'Brick ratio is required and must be non-negative.';
+        isValid = false;
+    }
+    if (!formData.mixRatioSand || formData.mixRatioSand < 0) {
+        errors.mixRatioSand = 'Sand ratio is required and must be non-negative.';
+        isValid = false;
+    }
+    if (!formData.mixRatioStone || formData.mixRatioStone < 0) {
+        errors.mixRatioStone = 'Stone ratio is required and must be non-negative.';
+        isValid = false;
+    }
+
+    if (!isValid) {
+        return; // Stop if validation fails
+    }
+
+    try {
+        const formDataToSend = new FormData();
+        formDataToSend.append('mixRatioCement', formData.mixRatioCement!.toString());
+        formDataToSend.append('mixRatioBrick', formData.mixRatioBrick!.toString());
+        formDataToSend.append('mixRatioSand', formData.mixRatioSand!.toString());
+        formDataToSend.append('mixRatioStone', formData.mixRatioStone!.toString());
+        if (formData.comment) {
+            formDataToSend.append('comment', formData.comment);
+        }
+
+        const response = await axios.post('http://192.168.0.111:8000/api/setMixRatio', formDataToSend, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        console.log('Form submitted successfully:', response.data);
+        setMixRatioPopup.value = false;
+        showToast('success', 'Mix ratio submitted successfully!');
+        // Reset form
+        formData.mixRatioCement = null;
+        formData.mixRatioBrick = null;
+        formData.mixRatioSand = null;
+        formData.mixRatioStone = null;
+        formData.comment = '';
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        showToast('error', 'Failed to submit mix ratio. Please try again.');
+    }
+};
 
 // Materials
 interface Material {
@@ -461,150 +489,183 @@ const handleKeydown = (id: string, event: KeyboardEvent) => {
     }
 };
 
+// Project profile
+const imageFileAvailable = ref(false);
+const imagePreviewUrl = ref<string | undefined>(undefined);
+const projectImageFile = ref<File | null>(null);
 
+function handleImageChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
 
-// FORM DATA
-const mainForm = ref<HTMLFormElement | null>(null)
-const localStorageKey = 'onumanFormData'
-
-// Save form inputs to localStorage
-const saveFormToLocalStorage = () => {
-    if (!mainForm.value) return
-
-    const formData = new FormData(mainForm.value)
-    const formObject: Record<string, string> = {}
-
-    formData.forEach((value, key) => {
-        if (typeof value === 'string') {
-            formObject[key] = value
-        }
-    })
-
-
-    localStorage.setItem(localStorageKey, JSON.stringify(formObject))
-}
-
-// Restore form inputs from localStorage
-const loadFormFromLocalStorage = () => {
-    if (!mainForm.value) return
-
-    const saved = localStorage.getItem(localStorageKey)
-    if (!saved) return
-
-    try {
-        const savedData: Record<string, string> = JSON.parse(saved)
-        for (const [key, value] of Object.entries(savedData)) {
-            const input = mainForm.value.querySelector(`[name="${key}"]`) as HTMLInputElement | HTMLTextAreaElement | null
-            if (input) {
-                input.value = value
-                // Trigger v-model updates manually if needed
-                input.dispatchEvent(new Event('input'))
+    if (file && file.type.startsWith('image/')) {
+        projectImageFile.value = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const result = e.target?.result;
+            if (typeof result === 'string') {
+                imagePreviewUrl.value = result;
+                imageFileAvailable.value = true;
+            } else {
+                imagePreviewUrl.value = undefined;
+                imageFileAvailable.value = false;
             }
-        }
-    } catch (e) {
-        console.warn('Failed to parse saved form:', e)
+        };
+        reader.onerror = () => {
+            console.error('Error reading file');
+            imagePreviewUrl.value = undefined;
+            imageFileAvailable.value = false;
+        };
+        reader.readAsDataURL(file); // Convert file to Base64
+    } else {
+        imagePreviewUrl.value = undefined;
+        imageFileAvailable.value = false;
+        projectImageFile.value = null;
     }
 }
 
-// Attach change listener to auto-save inputs
-const attachFormAutoSave = () => {
-    if (!mainForm.value) return
-
-    mainForm.value.addEventListener('input', saveFormToLocalStorage)
-    mainForm.value.addEventListener('change', saveFormToLocalStorage)
+// Main form submission
+interface MaterialSubmission {
+    name: string;
+    price: string;
 }
 
-// Load and bind on component mount
-onMounted(() => {
-    loadFormFromLocalStorage()
-    attachFormAutoSave()
-})
+interface ProjectFormData {
+    projectName: string;
+    startDate: string;
+    endDate: string;
+    clientName: string;
+    clientAddress: string;
+    clientPhone: string;
+    projectDescription: string;
+    buildingType: string;
+    totalFloor: number;
+    totalUnit: number;
+    mixRatio: {
+        cement: number | null;
+        brick: number | null;
+        sand: number | null;
+        stone: number | null;
+        comment: string;
+    };
+    materials: MaterialSubmission[];
+    projectImage: File | null;
+    onumanStart: string;
+}
 
-const mixRatio = computed(() => ({
-    cement: formData.mixRatioCement ?? 0,
-    brick: formData.mixRatioBrick ?? 0,
-    sand: formData.mixRatioSand ?? 0,
-    stone: formData.mixRatioStone ?? 0,
-    comment: formData.comment || ''
-}));
-
-
-// Form references
-// const formData = ref({
-//     mixRatioCement: 0,
-//     mixRatioBrick: 0,
-//     mixRatioSand: 0,
-//     mixRatioStone: 0,
-//     comment: '',
-// });
+const projectFormData = ref<ProjectFormData>({
+    projectName: '',
+    startDate: '',
+    endDate: '',
+    clientName: '',
+    clientAddress: '',
+    clientPhone: '',
+    projectDescription: '',
+    buildingType: '',
+    totalFloor: 0,
+    totalUnit: 0,
+    mixRatio: {
+        cement: null,
+        brick: null,
+        sand: null,
+        stone: null,
+        comment: ''
+    },
+    materials: [],
+    projectImage: null,
+    onumanStart: ''
+});
 
 const submitAddProject = async () => {
-    if (!mainForm.value) return;
-
-    const formDataRaw = new FormData(mainForm.value);
-    const formObject: { [key: string]: any } = {};
-
-    formDataRaw.forEach((value, key) => {
-        formObject[key] = value;
-    });
-
-    formObject.startDate = selectedDate.value
-        ? selectedDate.value.toISOString().split('T')[0]
-        : '';
-    formObject.endDate = selectedEndDate.value
-        ? selectedEndDate.value.toISOString().split('T')[0]
-        : '';
-    formObject.buildingType = selectedBuildingType.value || '';
-    formObject.clientPhone = clientPhoneNumber.value || '';
-    formObject.materials = materials.value.map((m) => ({
-        name: m.name,
-        price: m.price,
-    }));
-    formObject.mixRatio = {
-        cement: formData.mixRatioCement,
-        brick: formData.mixRatioBrick,
-        sand: formData.mixRatioSand,
-        stone: formData.mixRatioStone,
-        comment: formData.comment || '',
-    };
-    formObject.projectImage = imageUrl.value || '';
-    formObject.totalFloor = parseInt(formObject.totalFloor, 10) || 0;
-    formObject.totalUnit = parseInt(formObject.totalUnit, 10) || 0;
-
-    ['cement', 'rod', 'brick', 'sand', 'stone', 'readymix'].forEach((key) => {
-        if (key in formObject) {
-            delete formObject[key];
-        }
-    });
-
-    if (!formObject.projectName || !formObject.clientName || !formObject.startDate || !formObject.endDate) {
-        console.error('Missing required fields');
+    if (!isOnline.value) {
+        showToast('error', 'You are offline. Please connect to the internet.');
         return;
     }
 
     try {
-        const response = await axios.post(
-            'http://192.168.0.111:8000/api/create_project',
-            formObject,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: retrievedKey.value,
-                },
-            }
-        );
+        projectFormData.value.projectName = (document.querySelector('input[name="projectName"]') as HTMLInputElement)?.value || '';
+        projectFormData.value.startDate = selectedDate.value ? selectedDate.value.toISOString().split('T')[0] : '';
+        projectFormData.value.endDate = selectedEndDate.value ? selectedEndDate.value.toISOString().split('T')[0] : '';
+        projectFormData.value.clientName = (document.querySelector('input[name="clientName"]') as HTMLInputElement)?.value || '';
+        projectFormData.value.clientAddress = (document.querySelector('input[name="clientAddress"]') as HTMLInputElement)?.value || '';
+        projectFormData.value.clientPhone = clientPhoneNumber.value;
+        projectFormData.value.projectDescription = (document.querySelector('textarea[name="projectDescription"]') as HTMLTextAreaElement)?.value || '';
+        projectFormData.value.buildingType = selectedBuildingType.value;
+        projectFormData.value.totalFloor = parseInt((document.querySelector('input[name="totalFloor"]') as HTMLInputElement)?.value) || 0;
+        projectFormData.value.totalUnit = parseInt((document.querySelector('input[name="totalUnit"]') as HTMLInputElement)?.value) || 0;
+        projectFormData.value.mixRatio = {
+            cement: formData.mixRatioCement,
+            brick: formData.mixRatioBrick,
+            sand: formData.mixRatioSand,
+            stone: formData.mixRatioStone,
+            comment: formData.comment
+        };
+        projectFormData.value.materials = materials.value.map(({ name, price }) => ({ name, price }));
+        projectFormData.value.projectImage = projectImageFile.value;
+        projectFormData.value.onumanStart = (document.querySelector('input[name="onumanStart"]:checked') as HTMLInputElement)?.value || '';
 
-        console.log('Project submitted:', response.data);
-        localStorage.removeItem(localStorageKey);
+        // Validate required fields
+        if (!projectFormData.value.projectName) throw new Error('Project name is required');
+        if (!projectFormData.value.startDate || !projectFormData.value.endDate) throw new Error('Project duration is required');
+        if (!projectFormData.value.clientName) throw new Error('Client name is required');
+        if (!isValidPhone.value) throw new Error('Valid phone number is required (e.g., +1-123-456-7890)');
+        if (!projectFormData.value.buildingType) throw new Error('Building type is required');
+
+        // Create FormData for API submission
+        const apiFormData = new FormData();
+        apiFormData.append('projectName', projectFormData.value.projectName);
+        apiFormData.append('startDate', projectFormData.value.startDate);
+        apiFormData.append('endDate', projectFormData.value.endDate);
+        apiFormData.append('clientName', projectFormData.value.clientName);
+        apiFormData.append('clientAddress', projectFormData.value.clientAddress);
+        apiFormData.append('clientPhone', projectFormData.value.clientPhone);
+        apiFormData.append('projectDescription', projectFormData.value.projectDescription);
+        apiFormData.append('buildingType', projectFormData.value.buildingType);
+        apiFormData.append('totalFloor', projectFormData.value.totalFloor.toString());
+        apiFormData.append('totalUnit', projectFormData.value.totalUnit.toString());
+        apiFormData.append('mixRatio', JSON.stringify(projectFormData.value.mixRatio));
+        apiFormData.append('materials', JSON.stringify(projectFormData.value.materials));
+        apiFormData.append('onumanStart', projectFormData.value.onumanStart);
+        if (projectFormData.value.projectImage) {
+            apiFormData.append('projectImage', projectFormData.value.projectImage);
+        }
+
+        // Submit to API
+        const response = await axios.post('http://192.168.0.111:8000/api/create_project', apiFormData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: retrievedKey.value
+            }
+        });
+
+        showToast('success', 'Project created successfully!');
+        console.log('Project submitted successfully:', response.data);
+
+        // Reset form
+        // selectedDate.value = new Date();
+        // selectedEndDate.value = null;
+        // clientPhoneNumber.value = '';
+        // selectedBuildingType.value = '';
+        // materials.value = [
+        //     { id: 'cement', name: 'Cement', price: '', isEditing: false },
+        //     { id: 'rod', name: 'Rod', price: '', isEditing: false },
+        //     { id: 'brick', name: 'Brick', price: '', isEditing: false },
+        //     { id: 'sand', name: 'Sand', price: '', isEditing: false },
+        //     { id: 'stone', name: 'Stone', price: '', isEditing: false },
+        //     { id: 'readymix', name: 'ReadyMix', price: '', isEditing: false },
+        // ];
+        // imageFileAvailable.value = false;
+        // imagePreviewUrl.value = undefined;
+        // projectImageFile.value = null;
+
+        // Redirect to dashboard
+        // router.push('/dashboard');
+
     } catch (error) {
-        console.error('Error submitting form:', error);
+        console.error('Error submitting project:', error);
+        showToast('error', 'Failed to create project. Please try again.');
     }
 };
-
-
-
-
-
 
 // LIFECYCLE
 onMounted(async () => {
