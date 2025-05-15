@@ -1,0 +1,54 @@
+@use '../variables/index' as *;
+@use 'sass:color';
+
+.bordered-all {
+  border: 1px solid $d-border !important;
+}
+.short-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: color.adjust($d-bg, $lightness: 5%);
+  margin: 0.5rem 0;
+
+  &.new-bg {
+    background-color: color.adjust($d-border, $lightness: 5%);
+  }
+  th,
+  td {
+    border: 1px solid $d-border;
+    padding: 0.5rem;
+    &.full-inline {
+      background-color: color.adjust($d-border, $lightness: 5%);
+    }
+  }
+  th {
+    background-color: color.adjust($d-border, $lightness: -5%);
+  }
+  tr:hover {
+    background-color: color.adjust($d-border, $lightness: -5%);
+  }
+}
+
+.setMixRatioPopup {
+  position: absolute;
+  display: none;
+  left: 80%;
+  width: 15rem;
+  height: auto;
+  padding: 0 0.5rem;
+  border: 1px solid $d-border;
+  background-color: color.adjust($d-bg, $lightness: 5%);
+  border-radius: 0.4rem;
+  z-index: $z-top;
+  box-shadow: $box-shadow;
+
+  .show {
+    display: block !important;
+  }
+
+  textarea {
+    width: 100% !important;
+    min-height: 3rem;
+    resize: vertical;
+  }
+}

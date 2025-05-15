@@ -21,7 +21,7 @@ const { isVisible, tooltipRef, triggerRef, showTooltip, hideTooltip } = useOnuma
             'tooltip-left': position === 'left',
             'tooltip-right': position === 'right',
         }">
-            {{ content }}
+            <span v-html="content"></span>
             <div class="tooltip-arrow" :class="{
                 'tooltip-arrow-top': position === 'top',
                 'tooltip-arrow-bottom': position === 'bottom',
@@ -29,6 +29,7 @@ const { isVisible, tooltipRef, triggerRef, showTooltip, hideTooltip } = useOnuma
                 'tooltip-arrow-right': position === 'right',
             }" />
         </div>
+
     </div>
 </template>
 

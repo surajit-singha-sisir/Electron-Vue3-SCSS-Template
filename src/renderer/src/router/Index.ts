@@ -6,6 +6,7 @@ import CompanyInfo from '../pages/Welcome/CompanyInfo.vue'
 import ToolTipPage from '../pages/Welcome/ToolTipPage.vue'
 import Welcome from '../pages/Welcome/welcome.vue'
 import Dashboard from '../pages/Dashboard/Index.vue'
+import NewProject from '../pages/Dashboard/NewProject.vue'
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: Dashboard
+  },
+  {
+    path: '/addNewProject',
+    name: 'addNewProject',
+    component: NewProject
   }
 ]
 

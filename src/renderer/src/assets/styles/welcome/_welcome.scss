@@ -88,6 +88,34 @@
   color: $d-secondary;
   letter-spacing: 2px;
 }
+.onuman-input3 {
+  width: 100%;
+  padding: 0.5rem !important;
+  border: 1px solid $d-border !important;
+  border-radius: 4px;
+  outline: none;
+  background-color: color.adjust($d-bg, $lightness: 4%) !important;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: $d-primary !important;
+    box-shadow: 0 0 0 1px $d-btn-1 !important;
+  }
+
+  &::placeholder {
+    color: $d-secondary;
+    font-size: 0.9rem !important;
+    letter-spacing: 0 !important;
+  }
+  &::placeholder {
+    color: $d-sub-sub-text;
+    letter-spacing: 2px;
+  }
+
+  textarea {
+    width: 100% !important;
+  }
+}
 
 .paste-key {
   position: absolute;

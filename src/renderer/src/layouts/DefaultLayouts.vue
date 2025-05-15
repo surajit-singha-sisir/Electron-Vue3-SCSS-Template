@@ -25,8 +25,7 @@ import NavBars from '../components/Navbars.vue';
     top: 0;
     left: 0;
     right: 0;
-    z-index: 5;
-    margin-bottom: 2rem;
-    // -webkit-app-region: drag;
+    z-index: 4;
+    margin-bottom: 2.2rem;
 }
 </style>

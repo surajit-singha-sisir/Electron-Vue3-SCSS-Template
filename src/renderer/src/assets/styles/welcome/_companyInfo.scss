@@ -77,6 +77,17 @@
         background-color: $d-border;
       }
     }
+
+    .sub-input {
+      position: relative;
+      width: 100%;
+      & input {
+        width: 100% !important;
+        margin-top: 0.3rem !important;
+        padding: 0.4rem;
+
+      }
+    }
   }
 
   &:first-child {

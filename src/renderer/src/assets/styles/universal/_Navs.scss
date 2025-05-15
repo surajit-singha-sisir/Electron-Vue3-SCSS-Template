@@ -19,7 +19,7 @@ nav.nav-list {
     cursor: pointer;
     z-index: $z-top;
 
-    #nav-name {
+    .nav-name {
       position: relative;
       width: 100%;
       height: 100%;
@@ -45,7 +45,6 @@ nav.nav-list {
     .sub-navs {
       position: absolute;
       background-color: $d-bg;
-      padding: 0.3rem 0.6rem;
       border: 1px solid $d-border;
       border-radius: 0.2rem;
       top: 2.3rem;
@@ -57,8 +56,10 @@ nav.nav-list {
         gap: 1rem;
         justify-content: space-between;
         flex-direction: row;
-        padding: 0.2rem;
+        padding: 0.3rem 0.8rem;
         cursor: pointer;
+        overflow: hidden;
+
         p {
           color: $d-sub-text !important;
         }
@@ -66,6 +67,43 @@ nav.nav-list {
         .shot-cut-nav {
           color: $d-sub-sub-text !important;
         }
+
+        &:hover {
+          background-color: $d-primary;
+          & p {
+            color: $d-text !important;
+          }
+        }
+      }
+    }
+  }
+
+  .tab-index {
+    &:focus {
+      outline: none;
+      color: $d-text !important;
+      background-color: $d-primary;
+
+      & p {
+        color: $d-text !important;
+      }
+    }
+  }
+  .a-nav.tab-index {
+    &:focus {
+      color: $d-sub-text !important;
+      box-shadow: none;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: -0.3rem;
+        top: 0;
+        right: -0.3rem;
+        bottom: 0;
+        background-color: $d-border;
+        border-radius: 0.2rem;
+        z-index: $z-min;
       }
     }
   }

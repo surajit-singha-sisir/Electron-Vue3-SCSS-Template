@@ -1,3 +1,36 @@
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+  /* Width of the vertical scrollbar */
+  height: 8px;
+  /* Height of the horizontal scrollbar */
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  /* Light gray background */
+  border-radius: 4px;
+  /* Rounded edges */
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  /* Medium gray thumb */
+  border-radius: 4px;
+  /* Rounded edges */
+  transition: background 0.2s ease;
+  /* Smooth transition */
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  /* Darker gray on hover */
+}
+
+.scrollbar::-webkit-scrollbar-corner {
+  background: #f1f1f1;
+  /* Matches track */
+}
+
 .relative {
   position: relative;
 }
@@ -10,6 +43,10 @@
 .list-disc,
 .li-disc {
   list-style-type: disc;
+}
+
+.w-10 {
+  width: 10%;
 }
 
 .w-90 {
@@ -40,6 +77,10 @@
   width: 15rem;
 }
 
+.w-10i {
+  width: 10 !important;
+}
+
 .display-block,
 .d-block,
 .display-blocki,
@@ -47,8 +88,20 @@
   display: block !important;
 }
 
+.show {
+  display: block !important;
+}
+
 .m-l-20 {
   margin-left: 2rem;
+}
+
+.m-r-03 {
+  margin-right: 0.3rem;
+}
+
+.m-t-02 {
+  margin-top: 0.2rem;
 }
 
 .m-t-05 {
@@ -67,6 +120,10 @@
   margin-top: -0.5rem;
 }
 
+.m-b-05 {
+  margin-bottom: 0.5rem;
+}
+
 .m-b-10 {
   margin-bottom: 1rem;
 }
@@ -77,6 +134,12 @@
 
 .m-b-30 {
   margin-bottom: 3rem;
+}
+
+.m-tb-05,
+.m-bt-05 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .rotate-180 {
@@ -807,6 +870,23 @@
 .g-res-2-col-container,
 .grid-res-2-col-container {
   grid-template-columns: repeat(2, 1fr);
+}
+
+.bordered-all {
+  border: 1px solid #808080;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.bordered-circle {
+  min-width: 2rem;
+  max-width: 10rem;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #808080;
+  border-radius: 50%;
 }
 
 .btn {

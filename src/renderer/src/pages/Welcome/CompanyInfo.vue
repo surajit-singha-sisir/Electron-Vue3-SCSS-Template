@@ -182,7 +182,7 @@
                             aria-labelledby="employee-name-label" aria-describedby="employee-name-error"
                             maxlength="200">
                         <span v-if="employeeNameError" class="red" id="employee-name-error">{{ employeeNameError
-                            }}</span>
+                        }}</span>
                     </div>
 
                     <!-- YOUR DESIGNATION -->
@@ -353,7 +353,6 @@ const serialNumber = ref<string>('Not fetched');
 
 // STATE - API DATA
 const getOrgData = ref<OrgData>({ companies: [] });
-const retrievedKey = ref<string>('');
 
 // VALIDATION
 const { isValidPhone, formatPhoneNumber } = usePhoneValidator(officePhoneNumber);
@@ -436,6 +435,8 @@ const fetchSerialNumber = async () => {
 };
 
 // API FUNCTIONS
+
+const retrievedKey = ref<string>('');
 const retrieveLicenseKey = async () => {
     try {
         retrievedKey.value = await window.electronAPI.getLicenseKey();
