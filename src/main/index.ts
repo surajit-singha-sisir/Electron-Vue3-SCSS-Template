@@ -6,17 +6,30 @@ import icon from '../../resources/icon.png?asset'
 const Store = require('electron-store')
 const store = new Store.default()
 
-// IPC handler for storing license key
+const si = require('systeminformation')
+const os = require('os')
+
+// STORE LICENSE KEY
 ipcMain.handle('store-license-key', async (_event, licenseKey: string) => {
   store.set('licenseKey', licenseKey)
 })
 
-// IPC handler for retrieving license key
+// GET LICENSE KEY
 ipcMain.handle('get-license-key', async () => {
   return store.get('licenseKey') || ''
 })
 
-const os = require('os')
+// STORE MOTHERBOARD ID
+ipcMain.handle('store-motherboard-id', async (_event, motherboardID: string) => {
+  store.set('motherboardID', motherboardID)
+})
+
+// GET MOTHERBOARD ID (FROM STORED VALUE)
+ipcMain.handle('get-motherboard-id', async () => {
+  return store.get('motherboardID') || ''
+})
+
+// GET SYSTEM INFO
 function getSystemInfo() {
   return {
     hostname: os.hostname(),
@@ -30,20 +43,21 @@ function getSystemInfo() {
   }
 }
 
+// CREATE MAIN WINDOW
 function createWindow(): void {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
     autoHideMenuBar: true,
-    frame: false, // Disable the native title bar
+    frame: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: true, // Enable sandbox for security
-      contextIsolation: true, // Enable context isolation for security
-      nodeIntegration: false
+      sandbox: true,
+      contextIsolation: true,
+      nodeIntegration: false,
+      webSecurity: false // FOR DEV ONLY
     }
   })
 
@@ -51,9 +65,7 @@ function createWindow(): void {
     mainWindow.show()
   })
 
-  mainWindow.webContents.on('context-menu', (e) => {
-    e.preventDefault()
-  })
+  mainWindow.webContents.on('context-menu', (e) => e.preventDefault())
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
@@ -67,6 +79,19 @@ function createWindow(): void {
   }
 }
 
+// FETCH AND STORE REAL MOTHERBOARD ID
+async function updateStoredMotherboardID() {
+  try {
+    const baseboard = await si.baseboard()
+    const realID = baseboard.serial || 'Unknown'
+    store.set('motherboardID', realID)
+    console.log('Updated motherboard ID:', realID)
+  } catch (err) {
+    console.error('Failed to fetch motherboard serial:', err)
+  }
+}
+
+// ELECTRON APP READY
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
 
@@ -74,7 +99,7 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC handlers for window controls
+  // Window control handlers
   ipcMain.handle('window:close', () => {
     const window = BrowserWindow.getFocusedWindow()
     if (window) window.close()
@@ -88,35 +113,24 @@ app.whenReady().then(() => {
   ipcMain.handle('window:maximize', () => {
     const window = BrowserWindow.getFocusedWindow()
     if (window) {
-      if (window.isMaximized()) {
-        window.unmaximize()
-      } else {
-        window.maximize()
-      }
+      if (window.isMaximized()) window.unmaximize()
+      else window.maximize()
     }
   })
+
   ipcMain.handle('system-info', async () => {
     return getSystemInfo()
   })
-  // IPC handler to fetch motherboard serial number
-  const si = require('systeminformation')
-  ipcMain.handle('get-motherboard-serial', async () => {
-    try {
-      const motherboard = await si.baseboard()
-      return motherboard.serial || 'Unknown' // Returns serial number or 'Unknown' if not available
-    } catch (error) {
-      console.error('Error fetching motherboard serial:', error)
-      return 'Error'
-    }
-  })
 
+  // Start motherboard ID updater
+  updateStoredMotherboardID() // Run immediately
+  setInterval(updateStoredMotherboardID, 10 * 60 * 1000) // Every 10 minutes
+
+  // Create the main window
   createWindow()
-
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
 })
 
+// QUIT APP
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()

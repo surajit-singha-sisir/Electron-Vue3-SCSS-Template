@@ -75,9 +75,11 @@ button.button {
   }
 
   &.project-btn {
-    height: 100%;
     width: 100% !important;
     font-size: 0.9rem;
-    padding: 0.3rem;
+    padding: 0.5rem;
+    &.fuschia {
+      background-color: $d-fuschia;
+    }
   }
 }

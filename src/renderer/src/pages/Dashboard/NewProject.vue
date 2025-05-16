@@ -241,10 +241,12 @@
                             </div>
                         </div>
 
+                        <div class="f-center">
+                            <button type="submit" class="btn btn-primary m-t-10">Create Project</button>
+                        </div>
 
                     </aside>
                 </div>
-                <button type="submit" class="button project-btn m-b-05">Create Project</button>
             </form>
         </section>
     </DefaultLayouts>
@@ -262,6 +264,7 @@ import OnumanCombobox from '../../components/OnumanCombobox.vue';
 import Tooltip from '../../components/ToolTip.vue';
 import axios from 'axios';
 import { useNetworkStatus } from '../../composables/useNetworkStatus';
+import { useApi } from '../../composables/useApi'; let apiClient: any
 import { useToast } from '../../composables/Toast';
 
 // IMAGE UPLOAD
@@ -314,10 +317,10 @@ const { isOnline } = useNetworkStatus();
 
 watch(isOnline, (newStatus) => {
     if (newStatus) {
-        showToast('success', "You are now 🟢 online");
+        showToast('success', "You are now online");
         console.log(newStatus);
     } else {
-        showToast('error', "You are now 🔴 offline");
+        showToast('error', "You are now offline");
     }
 });
 
@@ -368,13 +371,13 @@ const setMixRatioOut = () => {
 };
 
 // Reactive form data for mix ratio
-const formData = reactive({
-    mixRatioCement: null as number | null,
-    mixRatioBrick: null as number | null,
-    mixRatioSand: null as number | null,
-    mixRatioStone: null as number | null,
-    comment: '',
-});
+// const formData = reactive({
+//     mixRatioCement: null as number | null,
+//     mixRatioBrick: null as number | null,
+//     mixRatioSand: null as number | null,
+//     mixRatioStone: null as number | null,
+//     comment: '',
+// });
 
 // Reactive errors for mix ratio validation
 const errors = reactive({
@@ -467,149 +470,116 @@ const handleKeydown = (id: string, event: KeyboardEvent) => {
 const mainForm = ref<HTMLFormElement | null>(null)
 const localStorageKey = 'onumanFormData'
 
-// Save form inputs to localStorage
+// API
+onMounted(async () => {
+  const api = await useApi()
+  apiClient = api.apiClient
+
+  loadFormFromLocalStorage()
+  attachFormAutoSave()
+})
+
+// SAVE FORM DATA TO LOCAL STORAGE
 const saveFormToLocalStorage = () => {
-    if (!mainForm.value) return
+  if (!mainForm.value) return
 
-    const formData = new FormData(mainForm.value)
-    const formObject: Record<string, string> = {}
+  const formData = new FormData(mainForm.value)
+  const formObject: Record<string, string> = {}
 
-    formData.forEach((value, key) => {
-        if (typeof value === 'string') {
-            formObject[key] = value
-        }
-    })
-
-
-    localStorage.setItem(localStorageKey, JSON.stringify(formObject))
-}
-
-// Restore form inputs from localStorage
-const loadFormFromLocalStorage = () => {
-    if (!mainForm.value) return
-
-    const saved = localStorage.getItem(localStorageKey)
-    if (!saved) return
-
-    try {
-        const savedData: Record<string, string> = JSON.parse(saved)
-        for (const [key, value] of Object.entries(savedData)) {
-            const input = mainForm.value.querySelector(`[name="${key}"]`) as HTMLInputElement | HTMLTextAreaElement | null
-            if (input) {
-                input.value = value
-                // Trigger v-model updates manually if needed
-                input.dispatchEvent(new Event('input'))
-            }
-        }
-    } catch (e) {
-        console.warn('Failed to parse saved form:', e)
+  formData.forEach((value, key) => {
+    if (typeof value === 'string') {
+      formObject[key] = value
     }
+  })
+
+  localStorage.setItem(localStorageKey, JSON.stringify(formObject))
 }
 
-// Attach change listener to auto-save inputs
+// LOAD FORM DATA FROM LOCAL STORAGE
+const loadFormFromLocalStorage = () => {
+  if (!mainForm.value) return
+
+  const saved = localStorage.getItem(localStorageKey)
+  if (!saved) return
+
+  try {
+    const savedData: Record<string, string> = JSON.parse(saved)
+    for (const [key, value] of Object.entries(savedData)) {
+      const input = mainForm.value?.querySelector(`[name="${key}"]`) as HTMLInputElement | HTMLTextAreaElement | null
+      if (input) {
+        input.value = value
+        input.dispatchEvent(new Event('input')) // Trigger v-model
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse saved form:', e)
+  }
+}
+
+// ATTACH AUTO-SAVE TO FORM INPUT
 const attachFormAutoSave = () => {
-    if (!mainForm.value) return
-
-    mainForm.value.addEventListener('input', saveFormToLocalStorage)
-    mainForm.value.addEventListener('change', saveFormToLocalStorage)
+  if (!mainForm.value) return
+  mainForm.value.addEventListener('input', saveFormToLocalStorage)
+  mainForm.value.addEventListener('change', saveFormToLocalStorage)
 }
 
-// Load and bind on component mount
-onMounted(() => {
-    loadFormFromLocalStorage()
-    attachFormAutoSave()
+// MIX RATIO (computed from your formData object)
+const formData = ref({
+  mixRatioCement: 0,
+  mixRatioBrick: 0,
+  mixRatioSand: 0,
+  mixRatioStone: 0,
+  comment: '',
 })
 
 const mixRatio = computed(() => ({
-    cement: formData.mixRatioCement ?? 0,
-    brick: formData.mixRatioBrick ?? 0,
-    sand: formData.mixRatioSand ?? 0,
-    stone: formData.mixRatioStone ?? 0,
-    comment: formData.comment || ''
-}));
+  cement: formData.value.mixRatioCement,
+  brick: formData.value.mixRatioBrick,
+  sand: formData.value.mixRatioSand,
+  stone: formData.value.mixRatioStone,
+  comment: formData.value.comment || ''
+}))
 
-
-// Form references
-// const formData = ref({
-//     mixRatioCement: 0,
-//     mixRatioBrick: 0,
-//     mixRatioSand: 0,
-//     mixRatioStone: 0,
-//     comment: '',
-// });
-
+// SUBMIT FUNCTION
 const submitAddProject = async () => {
-    if (!mainForm.value) return;
+  if (!mainForm.value || !apiClient) return
 
-    const formDataRaw = new FormData(mainForm.value);
-    const formObject: { [key: string]: any } = {};
+  const formDataRaw = new FormData(mainForm.value)
+  const formObject: Record<string, any> = {}
 
-    formDataRaw.forEach((value, key) => {
-        formObject[key] = value;
-    });
+  formDataRaw.forEach((value, key) => {
+    formObject[key] = value
+  })
 
-    formObject.startDate = selectedDate.value
-        ? selectedDate.value.toISOString().split('T')[0]
-        : '';
-    formObject.endDate = selectedEndDate.value
-        ? selectedEndDate.value.toISOString().split('T')[0]
-        : '';
-    formObject.buildingType = selectedBuildingType.value || '';
-    formObject.clientPhone = clientPhoneNumber.value || '';
-    formObject.materials = materials.value.map((m) => ({
-        name: m.name,
-        price: m.price,
-    }));
-    formObject.mixRatio = {
-        cement: formData.mixRatioCement,
-        brick: formData.mixRatioBrick,
-        sand: formData.mixRatioSand,
-        stone: formData.mixRatioStone,
-        comment: formData.comment || '',
-    };
-    formObject.projectImage = imageUrl.value || '';
-    formObject.totalFloor = parseInt(formObject.totalFloor, 10) || 0;
-    formObject.totalUnit = parseInt(formObject.totalUnit, 10) || 0;
+  formObject.startDate = selectedDate.value ? selectedDate.value.toISOString().split('T')[0] : ''
+  formObject.endDate = selectedEndDate.value ? selectedEndDate.value.toISOString().split('T')[0] : ''
+  formObject.buildingType = selectedBuildingType.value || ''
+  formObject.clientPhone = clientPhoneNumber.value || ''
+  formObject.materials = materials.value.map((m) => ({ name: m.name, price: m.price }))
+  formObject.mixRatio = mixRatio.value
+  formObject.projectImage = imageUrl.value || ''
+  formObject.totalFloor = parseInt(formObject.totalFloor, 10) || 0
+  formObject.totalUnit = parseInt(formObject.totalUnit, 10) || 0
 
-    ['cement', 'rod', 'brick', 'sand', 'stone', 'readymix'].forEach((key) => {
-        if (key in formObject) {
-            delete formObject[key];
-        }
-    });
+  // REMOVE MATERIAL KEYS IF THEY EXIST (already in mixRatio)
+  const materialKeys = ['cement', 'rod', 'brick', 'sand', 'stone', 'readymix']
+  materialKeys.forEach((key) => delete formObject[key])
 
-    if (!formObject.projectName || !formObject.clientName || !formObject.startDate || !formObject.endDate) {
-        console.error('Missing required fields');
-        return;
-    }
+  // VALIDATE REQUIRED
+  if (!formObject.projectName || !formObject.clientName || !formObject.startDate || !formObject.endDate) {
+    showToast('error', 'Missing required fields')
+    return
+  }
 
-    try {
-        const response = await axios.post(
-            'http://192.168.0.111:8000/api/create_project',
-            formObject,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: retrievedKey.value,
-                },
-            }
-        );
-
-        console.log('Project submitted:', response.data);
-        localStorage.removeItem(localStorageKey);
-    } catch (error) {
-        console.error('Error submitting form:', error);
-    }
-};
-
-
-
-
-
-
-// LIFECYCLE
-onMounted(async () => {
-    await retrieveLicenseKey();
-});
+  try {
+    const res = await apiClient.post('/api/create_project', formObject)
+    showToast('success', 'Project created successfully', 10000, 'right-top')
+    localStorage.removeItem(localStorageKey)
+  } catch (error) {
+    console.error('Submit error:', error)
+    showToast('error', 'Encountered an error', 5000, 'right-top')
+  }
+}
 </script>
 
 

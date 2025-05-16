@@ -452,7 +452,7 @@ $shadow-error: rgba(212, 51, 51, 0.2); // INVALID INPUT SHADOW
                         }
 
                         &::-webkit-scrollbar-thumb:hover {
-                            background: lighten($border, 10%);
+                            background: color.adjust($border, $lightness: 10%);
                         }
 
                         &:hover,
@@ -512,7 +512,7 @@ $shadow-error: rgba(212, 51, 51, 0.2); // INVALID INPUT SHADOW
 
                         // HOVER EFFECT FOR NON-DISABLED DATES
                         &:hover:not(.disabled) {
-                            background-color: darken($primary-bg, 5%);
+                            background-color: color.adjust($primary-bg, $lightness: -5%);
                             cursor: pointer;
                         }
 

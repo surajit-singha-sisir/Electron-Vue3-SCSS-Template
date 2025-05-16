@@ -7,6 +7,8 @@ import ToolTipPage from '../pages/Welcome/ToolTipPage.vue'
 import Welcome from '../pages/Welcome/welcome.vue'
 import Dashboard from '../pages/Dashboard/Index.vue'
 import NewProject from '../pages/Dashboard/NewProject.vue'
+import path from 'path'
+import Temp from '../pages/Temp.vue'
 
 const routes = [
   {
@@ -43,6 +45,11 @@ const routes = [
     path: '/addNewProject',
     name: 'addNewProject',
     component: NewProject
+  },
+  {
+    path: '/Temp',
+    name: 'Temp',
+    component: Temp
   }
 ]
 

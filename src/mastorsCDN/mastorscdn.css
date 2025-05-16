@@ -49,6 +49,10 @@
   width: 10%;
 }
 
+.w-80 {
+  width: 80%;
+}
+
 .w-90 {
   width: 90%;
 }
@@ -94,6 +98,12 @@
 
 .show {
   display: block !important;
+}
+
+.margin-auto,
+.mar-auto,
+.m-auto {
+  margin: auto !important;
 }
 
 .m-l-20 {
