@@ -10,11 +10,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 
 interface Props {
     message: string
-    type?: 'success' | 'error' | 'info'
+    type?: 'success' | 'error' | 'info' | 'warning' | 'critical' | 'loading' | 'notification' | 'help' | 'maintenance' | 'reminder'
     duration?: number
     visible: boolean
     position?: 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left'
@@ -46,16 +46,32 @@ const toastClasses = computed(() => ({
     'toast--success': props.type === 'success',
     'toast--error': props.type === 'error',
     'toast--info': props.type === 'info',
+    'toast--warning': props.type === 'warning',
+    'toast--critical': props.type === 'critical',
+    'toast--loading': props.type === 'loading',
+    'toast--notification': props.type === 'notification',
+    'toast--help': props.type === 'help',
+    'toast--maintenance': props.type === 'maintenance',
+    'toast--reminder': props.type === 'reminder',
     [`toast--${props.position}`]: true,
     [`toast--transition-${props.transition}`]: true,
     'toast--hidden': !isVisible.value
 }))
 
+
 const iconClasses = computed(() => ({
     'icon-success': props.type === 'success',
     'icon-error': props.type === 'error',
-    'icon-info': props.type === 'info'
+    'icon-info': props.type === 'info',
+    'icon-warning': props.type === 'warning',
+    'icon-critical': props.type === 'critical',
+    'icon-loading': props.type === 'loading',
+    'icon-notification': props.type === 'notification',
+    'icon-help': props.type === 'help',
+    'icon-maintenance': props.type === 'maintenance',
+    'icon-reminder': props.type === 'reminder'
 }))
+
 
 const progressStyle = computed(() => ({
     width: `${progress.value}%`
@@ -89,7 +105,6 @@ const showToast = () => {
     }
 }
 
-// Watch for prop changes
 watch(
     () => [props.visible, props.message, props.type, props.duration],
     () => {
@@ -98,28 +113,48 @@ watch(
     { immediate: true }
 )
 
-// Clean up on unmount
 onUnmounted(() => {
     if (timeoutId) clearTimeout(timeoutId)
     if (progressInterval) clearInterval(progressInterval)
 })
 </script>
 
+
+
 <style scoped lang="scss">
-$color-success: #28a745;
-$color-success-gradient: linear-gradient(135deg, #005c15, #005068);
-$color-error: #dc3545;
-$color-error-gradient: linear-gradient(135deg, #880815, #14006e);
-$color-info: #17a2b8;
-$color-info-gradient: linear-gradient(135deg, #005b69, #70004b);
-$color-text: #ffffff;
-$color-text-hover: #e0e0e0;
+// $color-success-gradient: linear-gradient(135deg, #005c15, #005068);
+// $color-error-gradient: linear-gradient(135deg, #880815, #14006e);
+// $color-info-gradient: linear-gradient(135deg, #005b69, #70004b);
+// $color-warning-gradient: linear-gradient(135deg, #ff9900, #cc7a00);
+// $color-critical-gradient: linear-gradient(135deg, #ff0033, #800000);
+// $color-loading-gradient: linear-gradient(135deg, #4b79a1, #283e51);
+// $color-notification-gradient: linear-gradient(135deg, #0074d9, #005fa3);
+// $color-help-gradient: linear-gradient(135deg, #00c3ff, #0077be);
+// $color-maintenance-gradient: linear-gradient(135deg, #5a6268, #343a40);
+// $color-reminder-gradient: linear-gradient(135deg, #ffcc00, #d4a200);
+
+$color-success-gradient: linear-gradient(135deg, #3e9628, #29b606);
+$color-error-gradient: linear-gradient(135deg, #cc2132, #c51f1f);
+$color-info-gradient: linear-gradient(135deg, #265a8a, #133296);
+$color-warning-gradient: linear-gradient(135deg, #a3862e, #ad8610);
+$color-critical-gradient: linear-gradient(135deg, #c93b53, #b86d28);
+$color-loading-gradient: linear-gradient(135deg, #8798a5, #577ba0);
+$color-notification-gradient: linear-gradient(135deg, #12fc87, #26609e);
+$color-help-gradient: linear-gradient(135deg, #b17d30, #7e4eca);
+$color-maintenance-gradient: linear-gradient(135deg, #0f1922, #00191d);
+$color-reminder-gradient: linear-gradient(135deg, #db8946, #a34614);
+
+
+$color-text: #cecece;
+$color-text-hover: #ffffff;
 $color-shadow: rgba(0, 0, 0, 0.2);
-$color-progress: #5e5e5e;
+$color-progress: #8f8f8f;
+
 $border-radius: 0;
 $padding: 0.3rem;
 $font-size: 1rem;
 $font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
 $shadow: 0 6px 16px $color-shadow;
 $glow: 0 0 8px rgba(255, 255, 255, 0.3);
 $transition-duration: 0.3s;
@@ -134,6 +169,7 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     z-index: 3;
 
+    // Type Backgrounds
     &--success {
         background: $color-success-gradient;
     }
@@ -146,6 +182,35 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
         background: $color-info-gradient;
     }
 
+    &--warning {
+        background: $color-warning-gradient;
+    }
+
+    &--critical {
+        background: $color-critical-gradient;
+    }
+
+    &--loading {
+        background: $color-loading-gradient;
+    }
+
+    &--notification {
+        background: $color-notification-gradient;
+    }
+
+    &--help {
+        background: $color-help-gradient;
+    }
+
+    &--maintenance {
+        background: $color-maintenance-gradient;
+    }
+
+    &--reminder {
+        background: $color-reminder-gradient;
+    }
+
+    // Positions
     &--top-right {
         top: 2rem;
         right: 0;
@@ -166,8 +231,10 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
         left: 0;
     }
 
+    // Transitions
     &--transition-slide {
-        transition: transform $transition-duration $transition-easing, opacity $transition-duration $transition-easing;
+        transition: transform $transition-duration $transition-easing,
+            opacity $transition-duration $transition-easing;
         transform: translateY(0);
         opacity: 1;
 
@@ -187,7 +254,8 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     &--transition-bounce {
-        transition: transform $transition-duration $transition-easing, opacity $transition-duration $transition-easing;
+        transition: transform $transition-duration $transition-easing,
+            opacity $transition-duration $transition-easing;
         transform: scale(1);
         opacity: 1;
 
@@ -204,25 +272,6 @@ $transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
     padding: $padding;
     color: $color-text;
 }
-
-// .toast-icon {
-//     width: 1.5rem;
-//     height: 1.5rem;
-//     margin-right: 0.8rem;
-//     background-size: cover;
-
-//     &.icon-success {
-//         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>');
-//     }
-
-//     &.icon-error {
-//         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>');
-//     }
-
-//     &.icon-info {
-//         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>');
-//     }
-// }
 
 .toast-message {
     flex: 1;

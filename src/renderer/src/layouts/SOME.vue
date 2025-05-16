@@ -17,7 +17,7 @@
 
 
 
-// TOAST
+// TOAST (success, error, info, warning, critical, loading, notification, help, maintenance, reminder)
 // import { useToast } from '../../composables/Toast';
 // const { showToast } = useToast();
 // showToast('success', "You are now 🟢 online", 5000);

@@ -1,9 +1,12 @@
 <template>
     <DefaultLayouts class="d-block relative">
-        <section class="f-center h-100 w-100"><br><br>
+        <section class="f-center onuman-main-scrollbar"><br><br>
             <br><br>
-            <form method="post" @submit.prevent="submitAddProject" class="main-screen w-95 h-100 onuman-scrollbar"
-                ref="mainForm">
+            <form method="post" @submit.prevent="submitAddProject" class="main-screen w-95" ref="mainForm">
+                <br>
+                <h1 class="text-center">CREATE A PROJECT</h1><br>
+                <hr>
+                <br><br>
                 <div class="g-res-3-col-container gap-10">
                     <aside>
                         <!-- PROJECT NAME -->
@@ -240,9 +243,11 @@
                                 <label for="interior">Interior</label>
                             </div>
                         </div>
-
-                        <div class="f-center">
-                            <button type="submit" class="btn btn-primary m-t-10">Create Project</button>
+                        <br>
+                        <hr>
+                        <div class="f-end-center">
+                            <button type="submit" class="btn btn-primary m-t-10" @click="GoToPile">Create
+                                Project</button>
                         </div>
 
                     </aside>
@@ -254,95 +259,56 @@
 
 
 <script setup lang="ts">
+/* ----------------------------------------
+| IMPORTS
+---------------------------------------- */
 import { ref, reactive, watch, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import DefaultLayouts from '../../layouts/DefaultLayouts.vue';
 import DatePicker from '../../components/UI/DatePicker.vue';
-import { useValidators } from '../../composables/useValidators';
-import { useImageUploader } from '../../composables/useImageUploader'
 import OnumanCombobox from '../../components/OnumanCombobox.vue';
 import Tooltip from '../../components/ToolTip.vue';
-import axios from 'axios';
-import { useNetworkStatus } from '../../composables/useNetworkStatus';
-import { useApi } from '../../composables/useApi'; let apiClient: any
+
 import { useToast } from '../../composables/Toast';
+import { useApi } from '../../composables/useApi';
+import { useValidators } from '../../composables/useValidators';
+import { useImageUploader } from '../../composables/useImageUploader';
+import { useNetworkStatus } from '../../composables/useNetworkStatus';
+
+/* ----------------------------------------
+| CONSTANTS AND REFS
+---------------------------------------- */
+
+// TOAST & NETWORK
+const { showToast, dismissToast } = useToast();
+const { isOnline } = useNetworkStatus();
+const networkStatus = ref<boolean>(true);
+// watch(isOnline, (val) => { networkStatus.value = val; console.log(isOnline.value); });
+
+// ROUTER
+const router = useRouter();
+
+// USE API (Composable)
+let apiClient: any;
 
 // IMAGE UPLOAD
-
-const { uploadImage } = useImageUploader()
-const imageUrl = ref<string | null>(null)
-
-const handleFileChange = async (event: Event) => {
-    console.log('handleFileChange triggered')
-    const target = event.target as HTMLInputElement
-    const file = target.files?.[0]
-    if (!file) return
-
-    // Optionally: show a local preview while uploading
-    imageUrl.value = URL.createObjectURL(file)
-
-    // Upload image and get server URL
-    try {
-        const uploadedUrl = await uploadImage(file)
-        if (uploadedUrl) {
-            imageUrl.value = 'http://192.168.0.111:8000' + uploadedUrl
-            console.log('Image URL set to:', imageUrl.value)
-        }
-
-    } catch (error) {
-        console.error('Image upload failed:', error)
-    }
-}
-
-watch(imageUrl, (val) => {
-    console.log('imageUrl changed:', val)
-})
-
+const { uploadImage } = useImageUploader();
+const imageUrl = ref<string | null>(null);
 
 // LICENSE KEY
 const retrievedKey = ref<string>('');
-const retrieveLicenseKey = async () => {
-    try {
-        retrievedKey.value = await window.electronAPI.getLicenseKey();
-    } catch (error) {
-        console.error('FAILED TO RETRIEVE LICENSE KEY:', error);
-        retrievedKey.value = 'FAILED TO RETRIEVE LICENSE KEY';
-        showToast('error', "YOU HAVEN'T ANY LICENSE KEY");
-    }
-};
 
-// Toast and network status
-const { showToast } = useToast();
-const { isOnline } = useNetworkStatus();
-
-watch(isOnline, (newStatus) => {
-    if (newStatus) {
-        showToast('success', "You are now online");
-        console.log(newStatus);
-    } else {
-        showToast('error', "You are now offline");
-    }
-});
-
-// Router setup
-const router = useRouter();
-const goBack = () => {
-    router.push('/dashboard');
-};
-
-// Date setup
-const selectedDate = ref<Date | null>(new Date()); // TODAY
+// DATE SELECTION
+const selectedDate = ref<Date | null>(new Date());
 const selectedEndDate = ref<Date | null>(null);
 
-// Phone number setup
+// PHONE VALIDATION
 const clientPhoneNumber = ref<string>('');
 const { usePhoneValidator } = useValidators();
 const { isValidPhone, formatPhoneNumber } = usePhoneValidator(clientPhoneNumber);
 
-// Building details
+// BUILDING SELECTION
 const selectedBuildingType = ref<string>('');
-
-// All building types
 const buildingType = [
     'Bungalow', 'Apartment', 'Condominium', 'Townhouse', 'Villa', 'Cottage', 'Mansion', 'Skyscraper',
     'Duplex', 'Triplex', 'Loft', 'Penthouse', 'Rowhouse', 'Modular Home', 'Tiny House', 'Ranch House',
@@ -356,12 +322,7 @@ const buildingType = [
     'Windmill', 'Observatory'
 ];
 
-function onNumberInputOld(event: Event) {
-    const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
-}
-
-// Set mix ratio
+// MIX RATIO POPUP
 const setMixRatioPopup = ref(false);
 const setMixRatio = () => {
     setMixRatioPopup.value = true;
@@ -369,17 +330,7 @@ const setMixRatio = () => {
 const setMixRatioOut = () => {
     setMixRatioPopup.value = !setMixRatioPopup.value;
 };
-
-// Reactive form data for mix ratio
-// const formData = reactive({
-//     mixRatioCement: null as number | null,
-//     mixRatioBrick: null as number | null,
-//     mixRatioSand: null as number | null,
-//     mixRatioStone: null as number | null,
-//     comment: '',
-// });
-
-// Reactive errors for mix ratio validation
+// MIX RATIO ERRORS
 const errors = reactive({
     mixRatioCement: '',
     mixRatioBrick: '',
@@ -387,8 +338,7 @@ const errors = reactive({
     mixRatioStone: '',
 });
 
-
-// Materials
+// MATERIALS
 interface Material {
     id: string;
     name: string;
@@ -405,11 +355,45 @@ const materials = ref<Material[]>([
     { id: 'readymix', name: 'ReadyMix', price: '', isEditing: false },
 ]);
 
-// Add new material
+// FORM DATA
+const mainForm = ref<HTMLFormElement | null>(null);
+const localStorageKey = 'onumanFormData';
+
+/* ----------------------------------------
+| IMAGE HANDLING
+---------------------------------------- */
+const handleFileChange = async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
+
+    imageUrl.value = URL.createObjectURL(file);
+
+    try {
+        const uploadedUrl = await uploadImage(file);
+        if (uploadedUrl) {
+            imageUrl.value = 'http://192.168.0.111:8000' + uploadedUrl;
+        }
+    } catch (error) {
+        console.error('Image upload failed:', error);
+    }
+};
+
+
+/* ----------------------------------------
+| NUMBER INPUT HANDLER OLD
+---------------------------------------- */
+function onNumberInputOld(event: Event) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+}
+
+/* ----------------------------------------
+| MATERIAL HANDLING
+---------------------------------------- */
 const addNewMaterial = () => {
-    const newId = `material-${Date.now()}`;
     materials.value.push({
-        id: newId,
+        id: `material-${Date.now()}`,
         name: `Material ${materials.value.length + 1}`,
         price: '',
         isEditing: false,
@@ -418,30 +402,22 @@ const addNewMaterial = () => {
 
 const onNumberInput = (event: Event, id: string) => {
     const input = event.target as HTMLInputElement;
-    const value = input.value.replace(/[^0-9]/g, '');
     const material = materials.value.find((m) => m.id === id);
     if (material) {
-        material.price = value;
+        material.price = input.value.replace(/[^0-9]/g, '');
     }
 };
 
-// Delete material
 const deleteCurrentMaterial = (id: string) => {
-    const index = materials.value.findIndex((material) => material.id === id);
-    if (index !== -1) {
-        materials.value.splice(index, 1);
-    }
+    const index = materials.value.findIndex((m) => m.id === id);
+    if (index !== -1) materials.value.splice(index, 1);
 };
 
-// Toggle edit mode for material name
 const toggleEditName = (id: string) => {
     const material = materials.value.find((m) => m.id === id);
-    if (material) {
-        material.isEditing = !material.isEditing;
-    }
+    if (material) material.isEditing = !material.isEditing;
 };
 
-// Update material name
 const updateMaterialName = (id: string, newName: string) => {
     const material = materials.value.find((m) => m.id === id);
     if (material && newName.trim()) {
@@ -450,137 +426,125 @@ const updateMaterialName = (id: string, newName: string) => {
     }
 };
 
-// Handle blur to save name
-const handleBlur = (id: string, event: Event) => {
-    const input = event.target as HTMLInputElement;
-    updateMaterialName(id, input.value);
-};
-
-// Handle Enter key to save name
+const handleBlur = (id: string, event: Event) => updateMaterialName(id, (event.target as HTMLInputElement).value);
 const handleKeydown = (id: string, event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
-        const input = event.target as HTMLInputElement;
-        updateMaterialName(id, input.value);
-    }
+    if (event.key === 'Enter') handleBlur(id, event);
 };
 
-
-
-// FORM DATA
-const mainForm = ref<HTMLFormElement | null>(null)
-const localStorageKey = 'onumanFormData'
-
-// API
-onMounted(async () => {
-  const api = await useApi()
-  apiClient = api.apiClient
-
-  loadFormFromLocalStorage()
-  attachFormAutoSave()
-})
-
-// SAVE FORM DATA TO LOCAL STORAGE
-const saveFormToLocalStorage = () => {
-  if (!mainForm.value) return
-
-  const formData = new FormData(mainForm.value)
-  const formObject: Record<string, string> = {}
-
-  formData.forEach((value, key) => {
-    if (typeof value === 'string') {
-      formObject[key] = value
-    }
-  })
-
-  localStorage.setItem(localStorageKey, JSON.stringify(formObject))
-}
-
-// LOAD FORM DATA FROM LOCAL STORAGE
-const loadFormFromLocalStorage = () => {
-  if (!mainForm.value) return
-
-  const saved = localStorage.getItem(localStorageKey)
-  if (!saved) return
-
-  try {
-    const savedData: Record<string, string> = JSON.parse(saved)
-    for (const [key, value] of Object.entries(savedData)) {
-      const input = mainForm.value?.querySelector(`[name="${key}"]`) as HTMLInputElement | HTMLTextAreaElement | null
-      if (input) {
-        input.value = value
-        input.dispatchEvent(new Event('input')) // Trigger v-model
-      }
-    }
-  } catch (e) {
-    console.warn('Failed to parse saved form:', e)
-  }
-}
-
-// ATTACH AUTO-SAVE TO FORM INPUT
-const attachFormAutoSave = () => {
-  if (!mainForm.value) return
-  mainForm.value.addEventListener('input', saveFormToLocalStorage)
-  mainForm.value.addEventListener('change', saveFormToLocalStorage)
-}
-
-// MIX RATIO (computed from your formData object)
+/* ----------------------------------------
+| MIX RATIO
+---------------------------------------- */
 const formData = ref({
-  mixRatioCement: 0,
-  mixRatioBrick: 0,
-  mixRatioSand: 0,
-  mixRatioStone: 0,
-  comment: '',
-})
+    mixRatioCement: 1,
+    mixRatioBrick: 3,
+    mixRatioSand: 1.5,
+    mixRatioStone: 3,
+    comment: '',
+});
 
 const mixRatio = computed(() => ({
-  cement: formData.value.mixRatioCement,
-  brick: formData.value.mixRatioBrick,
-  sand: formData.value.mixRatioSand,
-  stone: formData.value.mixRatioStone,
-  comment: formData.value.comment || ''
-}))
+    cement: formData.value.mixRatioCement,
+    brick: formData.value.mixRatioBrick,
+    sand: formData.value.mixRatioSand,
+    stone: formData.value.mixRatioStone,
+    comment: formData.value.comment || '',
+}));
 
-// SUBMIT FUNCTION
+/* ----------------------------------------
+| FORM PERSISTENCE (LOCAL STORAGE)
+---------------------------------------- */
+const saveFormToLocalStorage = () => {
+    if (!mainForm.value) return;
+    const formData = new FormData(mainForm.value);
+    const formObject: Record<string, string> = {};
+
+    formData.forEach((value, key) => {
+        if (typeof value === 'string') formObject[key] = value;
+    });
+
+    localStorage.setItem(localStorageKey, JSON.stringify(formObject));
+};
+
+const loadFormFromLocalStorage = () => {
+    if (!mainForm.value) return;
+    const saved = localStorage.getItem(localStorageKey);
+    if (!saved) return;
+
+    try {
+        const savedData: Record<string, string> = JSON.parse(saved);
+        Object.entries(savedData).forEach(([key, value]) => {
+            const input = mainForm.value?.querySelector(`[name="${key}"]`) as HTMLInputElement | HTMLTextAreaElement | null;
+            if (input) {
+                input.value = value;
+                input.dispatchEvent(new Event('input'));
+            }
+        });
+    } catch (e) {
+        console.warn('Failed to parse saved form:', e);
+    }
+};
+
+const attachFormAutoSave = () => {
+    if (!mainForm.value) return;
+    mainForm.value.addEventListener('input', saveFormToLocalStorage);
+    mainForm.value.addEventListener('change', saveFormToLocalStorage);
+};
+
+/* ----------------------------------------
+| LIFECYCLE
+---------------------------------------- */
+onMounted(async () => {
+    const api = await useApi();
+    apiClient = api.apiClient;
+
+    loadFormFromLocalStorage();
+    attachFormAutoSave();
+});
+
+/* ----------------------------------------
+| NAVIGATION
+---------------------------------------- */
+const GoToPile = () => router.push('/pile');
+
+/* ----------------------------------------
+| SUBMIT HANDLER
+---------------------------------------- */
 const submitAddProject = async () => {
-  if (!mainForm.value || !apiClient) return
+    if (!mainForm.value || !apiClient) return;
 
-  const formDataRaw = new FormData(mainForm.value)
-  const formObject: Record<string, any> = {}
+    const raw = new FormData(mainForm.value);
+    const formObject: Record<string, any> = {};
+    raw.forEach((value, key) => (formObject[key] = value));
 
-  formDataRaw.forEach((value, key) => {
-    formObject[key] = value
-  })
+    Object.assign(formObject, {
+        startDate: selectedDate.value?.toISOString().split('T')[0] || '',
+        endDate: selectedEndDate.value?.toISOString().split('T')[0] || '',
+        buildingType: selectedBuildingType.value || '',
+        clientPhone: clientPhoneNumber.value || '',
+        materials: materials.value.map((m) => ({ name: m.name, price: m.price })),
+        mixRatio: mixRatio.value,
+        projectImage: imageUrl.value || '',
+        totalFloor: parseInt(formObject.totalFloor, 10) || 0,
+        totalUnit: parseInt(formObject.totalUnit, 10) || 0,
+    });
 
-  formObject.startDate = selectedDate.value ? selectedDate.value.toISOString().split('T')[0] : ''
-  formObject.endDate = selectedEndDate.value ? selectedEndDate.value.toISOString().split('T')[0] : ''
-  formObject.buildingType = selectedBuildingType.value || ''
-  formObject.clientPhone = clientPhoneNumber.value || ''
-  formObject.materials = materials.value.map((m) => ({ name: m.name, price: m.price }))
-  formObject.mixRatio = mixRatio.value
-  formObject.projectImage = imageUrl.value || ''
-  formObject.totalFloor = parseInt(formObject.totalFloor, 10) || 0
-  formObject.totalUnit = parseInt(formObject.totalUnit, 10) || 0
+    ['cement', 'rod', 'brick', 'sand', 'stone', 'readymix'].forEach((key) => delete formObject[key]);
 
-  // REMOVE MATERIAL KEYS IF THEY EXIST (already in mixRatio)
-  const materialKeys = ['cement', 'rod', 'brick', 'sand', 'stone', 'readymix']
-  materialKeys.forEach((key) => delete formObject[key])
+    if (!formObject.projectName || !formObject.clientName || !formObject.startDate || !formObject.endDate) {
+        showToast('reminder', 'Missing required fields', 10000);
+        return;
+    }
 
-  // VALIDATE REQUIRED
-  if (!formObject.projectName || !formObject.clientName || !formObject.startDate || !formObject.endDate) {
-    showToast('error', 'Missing required fields')
-    return
-  }
-
-  try {
-    const res = await apiClient.post('/api/create_project', formObject)
-    showToast('success', 'Project created successfully', 10000, 'right-top')
-    localStorage.removeItem(localStorageKey)
-  } catch (error) {
-    console.error('Submit error:', error)
-    showToast('error', 'Encountered an error', 5000, 'right-top')
-  }
-}
+    try {
+        await apiClient.post('/api/create_project', formObject);
+        showToast('success', 'Project created successfully', 10000, 'right-bottom');
+        localStorage.removeItem(localStorageKey);
+    } catch (error) {
+        showToast('error', 'Encountered an error', 5000, 'right-bottom');
+    }
+};
 </script>
+
 
 
 

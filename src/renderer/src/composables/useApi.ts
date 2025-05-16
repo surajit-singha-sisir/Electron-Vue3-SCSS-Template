@@ -33,14 +33,14 @@ export async function useApi() {
   try {
     retrievedKey.value = await window.electronAPI.getLicenseKey()
   } catch {
-    showToast('error', 'FAILED TO GET LICENSE KEY')
+    showToast('error', 'FRAUD DETCTED! FAILED TO GET LICENSE KEY')
   }
 
   // GET MOTHERBOARD ID
   try {
     motherboardID.value = await window.electronAPI.getMotherboardID()
   } catch {
-    showToast('error', 'FAILED TO GET SERIAL ID')
+    showToast('error', 'FRAUD DETCTED! FAILED TO GET SERIAL ID')
   }
 
   // RETURN CONFIGURED CLIENT AND UPDATERS

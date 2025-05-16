@@ -3,12 +3,10 @@ import Index from '../pages/Welcome/Index.vue'
 import License from '../pages/Welcome/License.vue'
 import PrivacyPolicy from '../pages/Welcome/PrivacyPolicy.vue'
 import CompanyInfo from '../pages/Welcome/CompanyInfo.vue'
-import ToolTipPage from '../pages/Welcome/ToolTipPage.vue'
 import Welcome from '../pages/Welcome/welcome.vue'
 import Dashboard from '../pages/Dashboard/Index.vue'
 import NewProject from '../pages/Dashboard/NewProject.vue'
-import path from 'path'
-import Temp from '../pages/Temp.vue'
+import Pile from '../pages/Dashboard/Pile.vue'
 
 const routes = [
   {
@@ -37,7 +35,7 @@ const routes = [
     component: Welcome
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/',
     name: 'Dashboard',
     component: Dashboard
   },
@@ -47,9 +45,9 @@ const routes = [
     component: NewProject
   },
   {
-    path: '/Temp',
-    name: 'Temp',
-    component: Temp
+    path: '/Pile',
+    name: 'Pile',
+    component: Pile
   }
 ]
 

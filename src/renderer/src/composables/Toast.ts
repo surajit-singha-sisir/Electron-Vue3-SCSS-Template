@@ -1,10 +1,24 @@
 import { createApp, h, reactive } from 'vue'
 import ToastNotification from '../components/Toast.vue'
 
+type ToastDuration = number | 'infinite'
+
+type ToastType =
+  | 'success'
+  | 'error'
+  | 'info'
+  | 'warning'
+  | 'critical'
+  | 'loading'
+  | 'notification'
+  | 'help'
+  | 'maintenance'
+  | 'reminder'
+
 interface ToastOptions {
   message: string
-  type: 'success' | 'error' | 'info'
-  duration: number
+  type: ToastType
+  duration: ToastDuration
   position: 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left'
   transition?: 'slide' | 'fade' | 'bounce'
   icon?: boolean
@@ -25,18 +39,27 @@ export function useToast() {
   let toastId = 0
 
   const showToast = (
-    type: 'success' | 'error' | 'info',
+    type: ToastType,
     message: string,
-    duration = 3000,
-    position: 'right-bottom' | 'right-top' | 'left-top' | 'left-bottom' = 'right-bottom'
-  ) => {
-    // Map position to internal format
+    duration: ToastDuration = 3000,
+    position:
+      | 'right-bottom'
+      | 'right-top'
+      | 'left-top'
+      | 'left-bottom'
+      | 'top'
+      | 'bottom' = 'right-bottom'
+  ): number => {
     const positionMap: Record<string, 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left'> = {
       'right-bottom': 'bottom-right',
       'right-top': 'top-right',
       'left-top': 'top-left',
-      'left-bottom': 'bottom-left'
+      'left-bottom': 'bottom-left',
+      top: 'top-left',
+      bottom: 'bottom-left'
     }
+
+    const id = toastId++
 
     const toastOptions: ToastOptions = {
       type,
@@ -46,22 +69,13 @@ export function useToast() {
       transition: 'slide',
       icon: true,
       showClose: true,
-      showProgress: true,
+      showProgress: duration !== 'infinite',
       closeOnClick: false
     }
 
-    const id = toastId++
     const toastState = reactive({
-      message: toastOptions.message,
-      type: toastOptions.type,
-      duration: toastOptions.duration,
-      visible: true,
-      position: toastOptions.position,
-      transition: toastOptions.transition,
-      icon: toastOptions.icon,
-      showClose: toastOptions.showClose,
-      showProgress: toastOptions.showProgress,
-      closeOnClick: toastOptions.closeOnClick
+      ...toastOptions,
+      visible: true
     })
 
     const container = document.createElement('div')
@@ -71,8 +85,8 @@ export function useToast() {
       render() {
         return h(ToastNotification, {
           message: toastState.message,
-          type: toastState.type,
-          duration: toastState.duration,
+          type: toastState.type, // Correctly passed type
+          duration: typeof toastState.duration === 'number' ? toastState.duration : 0,
           visible: toastState.visible,
           position: toastState.position,
           transition: toastState.transition,
@@ -89,19 +103,22 @@ export function useToast() {
     const toastInstance: ToastInstance = { id, options: toastOptions, app, container }
     toasts.push(toastInstance)
 
-    // Auto-remove after duration
-    setTimeout(() => {
-      toastState.visible = false
-      setTimeout(() => {
-        const index = toasts.findIndex((t) => t.id === id)
-        if (index !== -1) {
-          toasts[index].app.unmount()
-          document.body.removeChild(toasts[index].container)
-          toasts.splice(index, 1)
-        }
-      }, 300) // Wait for animation
-    }, toastOptions.duration)
+    if (typeof duration === 'number') {
+      setTimeout(() => dismissToast(id), duration)
+    }
+
+    return id
   }
 
-  return { showToast }
+  const dismissToast = (id: number) => {
+    const index = toasts.findIndex((t) => t.id === id)
+    if (index !== -1) {
+      const toast = toasts[index]
+      toast.app.unmount()
+      document.body.removeChild(toast.container)
+      toasts.splice(index, 1)
+    }
+  }
+
+  return { showToast, dismissToast }
 }

@@ -27,7 +27,7 @@ body {
   }
 
   main.dashboard-main {
-    margin-top: 2.5rem;
+    margin-top: 2.2rem;
   }
 }
 
@@ -64,6 +64,38 @@ a {
   text-decoration: none;
 }
 
+.onuman-main-scrollbar {
+  overflow-x: auto;
+  overflow-y: scroll;
+  height: calc(100vh - 2.2rem);
+  scrollbar-color: $d-border $d-bg;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  -ms-overflow-style: none;
+  scrollbar-width: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $d-border;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $d-secondary;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: $d-btn-2;
+  }
+  &::-webkit-scrollbar-corner {
+    background: #f1f1f1;
+  }
+}
 // body > img,
 // p,
 // div,
