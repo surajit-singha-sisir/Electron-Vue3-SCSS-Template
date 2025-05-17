@@ -45,7 +45,7 @@ const routes = [
     component: NewProject
   },
   {
-    path: '/Pile',
+    path: '/:organization/Pile',
     name: 'Pile',
     component: Pile
   }

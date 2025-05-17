@@ -262,7 +262,6 @@ import locationData from '../../assets/jsons/countryStateCity.json';
 import OnumanCombobox from '../../components/OnumanCombobox.vue';
 import Tooltip from '../../components/ToolTip.vue';
 import { useValidators } from '../../composables/useValidators';
-import { useRouter } from 'vue-router';
 import type { SystemInfo } from '../../composables/SystemInfo';
 import axios from 'axios';
 import { useToast } from '../../composables/Toast';
@@ -301,7 +300,6 @@ interface OrgData {
 // COMPOSABLES
 const { showToast } = useToast();
 const { usePhoneValidator, useEmailValidator, useTradeLicenseValidator } = useValidators();
-const router = useRouter();
 
 // STATE - FORM STATUS
 const loading = ref(false);
@@ -685,7 +683,7 @@ const submitForm = async () => {
     try {
         loading.value = true;
         const formData = prepareFormData();
-        const response = await axios.post('http://192.168.0.111:8000/api/org_info', formData);
+        const response = await axios.post('http://192.168.0.111:8000/api/create_org', formData);
         console.log('API RESPONSE:', response.data);
         localStorage.removeItem('companyFormData');
         showToast('success', 'SUCCESSFULLY COMPLETED ALL SETUP', 10000, 'right-bottom');

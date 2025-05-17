@@ -24,13 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router'; 
 import DefaultLayouts from '../../layouts/DefaultLayouts.vue';
-import dashboardJSON from '../../assets/jsons/dashboardJSON.json';
-import NewProject from '../../components/Dashboard/NewProject.vue';
-import ModalBox from '../../components/UI/ModalBox.vue';
-
 const router = useRouter();
 
 // JSON FETCH

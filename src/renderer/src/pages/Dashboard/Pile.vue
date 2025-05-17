@@ -1,14 +1,21 @@
 <template>
-    <DefaultLayouts class="d-block relative w-90 m-auto">
-        <h1>Hi</h1>
-
-        <button type="button" class="btn btn-warning" @click="router.push('/dashboard')">Go to Dashboard</button><br>
-        <button type="button" class="btn btn-primary" @click="router.push('/addNewProject')">New Project</button><br>
+    <DefaultLayouts class="d-block relative">
+        <div class="main-screen onuman-main-scrollbar">
+            <section class="pile-container">
+                <br>
+                <div class="project-info-container">
+                    {{ organization }}
+                </div>
+            </section>
+        </div>
     </DefaultLayouts>
 </template>
-<script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
-import DefaultLayouts from '../../layouts/DefaultLayouts.vue';
-const router = useRouter();
 
+
+
+<script setup lang="ts">
+import { useRoute } from 'vue-router';
+import DefaultLayouts from '../../layouts/DefaultLayouts.vue';
+const route = useRoute()
+const organization = route.params.organization
 </script>

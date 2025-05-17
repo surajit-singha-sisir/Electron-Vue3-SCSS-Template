@@ -125,7 +125,7 @@ const monthNames = [
 const yearRange = computed(() => {
     const startYear = props.startFrom ? props.startFrom.getFullYear() : currentYear.value - 10
     const endYear = props.endDate ? props.endDate.getFullYear() : currentYear.value + 10
-    const years = []
+    const years: number[] = []
     for (let year = startYear; year <= endYear; year++) {
         years.push(year)
     }

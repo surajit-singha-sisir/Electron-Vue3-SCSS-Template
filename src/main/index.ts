@@ -29,6 +29,14 @@ ipcMain.handle('get-motherboard-id', async () => {
   return store.get('motherboardID') || ''
 })
 
+ipcMain.handle('store:set', (_event, key, value) => {
+  store.set(key, value)
+})
+
+ipcMain.handle('store:get', (_event, key) => {
+  return store.get(key)
+})
+
 // GET SYSTEM INFO
 function getSystemInfo() {
   return {
@@ -57,7 +65,7 @@ function createWindow(): void {
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,
-      webSecurity: false // FOR DEV ONLY
+      webSecurity: true // FOR DEV ONLY
     }
   })
 

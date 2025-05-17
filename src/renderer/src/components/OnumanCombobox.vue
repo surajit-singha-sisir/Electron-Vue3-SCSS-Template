@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 
 import { useOnumanCombobox } from '../composables/onumanCombobox';
 

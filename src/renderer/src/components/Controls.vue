@@ -1,5 +1,9 @@
 <template>
     <div class="window-controls">
+        <div class="network-status" :class="{ 'is-online': isOnline }">
+            <span class="status-text">{{ isOnline ? 'Online' : 'Offline' }}</span>
+        </div>
+
         <div class="user-settings">
             <i class="m-user3 bordered-circle" title="Profile" @click="toggleMenu"></i>
             <ul class="profile-menus" v-show="isMenuVisible">
@@ -9,6 +13,7 @@
                 <li class="menu">Support</li>
             </ul>
         </div>
+
         <div class="vr m-t-02 m-r-03"></div>
         <div class="f-center gap-03">
             <button class="minimize" @click="minimizeWindow" title="Minimize"></button>
@@ -20,6 +25,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useNetworkStatus } from '../composables/useNetworkStatus';
+
+const { isOnline } = useNetworkStatus();
 
 const isMaximized = ref(false)
 const isMenuVisible = ref(false)
@@ -60,7 +68,6 @@ const maximizeWindow = async () => {
     }
 }
 
-// Add click listener to close menu when clicking outside
 onMounted(() => {
     document.addEventListener('click', closeMenu)
 })
@@ -112,6 +119,27 @@ onUnmounted(() => {
     height: 80%;
     justify-content: flex-end;
     -webkit-app-region: drag;
+
+
+    .network-status {
+        position: absolute;
+        right: 9rem;
+        top: 45%;
+        transform: translateY(-50%);
+        -webkit-app-region: no-drag;
+
+        .status-text {
+            font-size: 0.8rem;
+            color: #ff3b30;
+            font-weight: 500;
+        }
+
+        &.is-online {
+            .status-text {
+                color: #01be01;
+            }
+        }
+    }
 
     .user-settings {
         position: absolute;

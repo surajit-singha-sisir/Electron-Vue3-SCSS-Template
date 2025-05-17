@@ -15,6 +15,19 @@
 //     motherboardID.value = await window.electronAPI.getMotherboardID()
 // }
 
+// // Get License Key
+// const getLicenseKey = async () => {
+//     await window.electronAPI.getLicenseKey();
+// };
+
+// // GET COMPANY INFORMATION JSON
+// const { set: setOrganization, get: getOrganization } = useElectronStore()
+// await setOrganization('organization', res.data);
+// const storedOrganization = await getOrganization('organization');
+
+// // GET COMPANY INFORMATION JSON
+// const { get: getOrganization } = useElectronStore()
+// const getOrganization = await getOrganization('organization');
 
 
 // TOAST (success, error, info, warning, critical, loading, notification, help, maintenance, reminder)

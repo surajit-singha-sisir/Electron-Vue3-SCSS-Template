@@ -246,11 +246,12 @@
                         <br>
                         <hr>
                         <div class="f-end-center">
-                            <button type="submit" class="btn btn-primary m-t-10" @click="GoToPile">Create
+                            <button type="submit" class="btn btn-primary m-t-10">Create
                                 Project</button>
                         </div>
 
                     </aside>
+
                 </div>
             </form>
         </section>
@@ -262,8 +263,7 @@
 /* ----------------------------------------
 | IMPORTS
 ---------------------------------------- */
-import { ref, reactive, watch, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, reactive, onMounted, computed } from 'vue';
 import DefaultLayouts from '../../layouts/DefaultLayouts.vue';
 import DatePicker from '../../components/UI/DatePicker.vue';
 import OnumanCombobox from '../../components/OnumanCombobox.vue';
@@ -273,20 +273,13 @@ import { useToast } from '../../composables/Toast';
 import { useApi } from '../../composables/useApi';
 import { useValidators } from '../../composables/useValidators';
 import { useImageUploader } from '../../composables/useImageUploader';
-import { useNetworkStatus } from '../../composables/useNetworkStatus';
 
 /* ----------------------------------------
 | CONSTANTS AND REFS
 ---------------------------------------- */
 
 // TOAST & NETWORK
-const { showToast, dismissToast } = useToast();
-const { isOnline } = useNetworkStatus();
-const networkStatus = ref<boolean>(true);
-// watch(isOnline, (val) => { networkStatus.value = val; console.log(isOnline.value); });
-
-// ROUTER
-const router = useRouter();
+const { showToast } = useToast();
 
 // USE API (Composable)
 let apiClient: any;
@@ -295,8 +288,6 @@ let apiClient: any;
 const { uploadImage } = useImageUploader();
 const imageUrl = ref<string | null>(null);
 
-// LICENSE KEY
-const retrievedKey = ref<string>('');
 
 // DATE SELECTION
 const selectedDate = ref<Date | null>(new Date());
@@ -504,7 +495,10 @@ onMounted(async () => {
 /* ----------------------------------------
 | NAVIGATION
 ---------------------------------------- */
-const GoToPile = () => router.push('/pile');
+// const GoToPile = (organization) => {
+//     router.push({ name: 'Pile', params: { organization } })
+// }
+
 
 /* ----------------------------------------
 | SUBMIT HANDLER

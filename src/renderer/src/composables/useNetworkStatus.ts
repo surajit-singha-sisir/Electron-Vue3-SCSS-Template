@@ -16,7 +16,7 @@ export function useNetworkStatus() {
     window.addEventListener('offline', updateOnlineStatus)
 
     if (!navigator.onLine) {
-      offlineToastId = showToast('error', 'You are currently offline', 10000000, 'left-top')
+      offlineToastId = showToast('error', 'You are currently offline', 5000, 'bottom')
     }
   })
 
@@ -31,9 +31,9 @@ export function useNetworkStatus() {
         dismissToast(offlineToastId)
         offlineToastId = null
       }
-      showToast('success', 'Connection restored', 5000, 'left-top')
+      showToast('success', 'Connection restored', 5000, 'bottom')
     } else {
-      offlineToastId = showToast('error', 'You are currently offline', 10000000, 'left-top')
+      offlineToastId = showToast('error', 'You are currently offline', 5000, 'bottom')
     }
   })
 
